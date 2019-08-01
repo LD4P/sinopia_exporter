@@ -48,7 +48,8 @@ const getResourceTextFromServer = async(groupName, resourceName) => {
 
 
 const saveResourceTextFromServer = async(savePathString, groupName, resourceName) => {
-  await fs.writeFileSync(`${savePathString}/${resourceName}`, (await getResourceTextFromServer(groupName, resourceName)))
+  // alternatively, could await https://nodejs.org/api/fs.html#fs_fspromises_writefile_file_data_options
+  fs.writeFileSync(`${savePathString}/${resourceName}`, (await getResourceTextFromServer(groupName, resourceName)))
 }
 
 const downloadAllRdfForGroup = async (groupName) => {
