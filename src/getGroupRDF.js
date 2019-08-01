@@ -58,7 +58,7 @@ const downloadAllRdfForGroup = async (groupName) => {
   savePathString = getSavePathString(groupName)
   fs.mkdirSync(savePathString)
 
-  await Promise.all(entityNames.map((entityName) => { saveResourceTextFromServer(savePathString, groupName, entityNames) }))
+  await Promise.all(entityNames.map((entityName) => saveResourceTextFromServer(savePathString, groupName, entityName)))
 
   const completionMsg = `completed export of ${groupName} at ${getDateString()}`
   fs.writeFileSync(`${savePathString}/complete.log`, completionMsg)
