@@ -1,12 +1,14 @@
 // Copyright 2019 Stanford University see LICENSE for license
 
-const fs = require('fs');
-const path = require('path');
-const SinopiaServer = require('sinopia_server')
+import fs from 'fs'
+import path from 'path'
+import config from 'config'
+import SinopiaServer from 'sinopia_server'
 
 
-instance = new SinopiaServer.LDPApi()
-instance.apiClient.basePath = 'https://trellis.sinopia.io'
+const instance = new SinopiaServer.LDPApi()
+instance.apiClient.basePath = config.get('trellis.basePath')
+console.info(`Sinopia Server base URL: ${instance.apiClient.basePath}`)
 
 
 const resourceToName = (uri) => {
@@ -54,10 +56,10 @@ const saveResourceTextFromServer = async(savePathString, groupName, resourceName
   fs.writeFileSync(`${savePathString}/${resourceName}`, (await getResourceTextFromServer(groupName, resourceName)))
 }
 
-const downloadAllRdfForGroup = async (groupName) => {
+export const downloadAllRdfForGroup = async (groupName) => {
   const entityNames = await listGroupRdfEntityNames(groupName)
 
-  savePathString = getSavePathString(groupName)
+  const savePathString = getSavePathString(groupName)
   fs.mkdirSync(savePathString)
 
   await Promise.all(entityNames.map((entityName) => saveResourceTextFromServer(savePathString, groupName, entityName)))
@@ -66,24 +68,3 @@ const downloadAllRdfForGroup = async (groupName) => {
   fs.writeFileSync(`${savePathString}/complete.log`, completionMsg)
   console.log(completionMsg)
 }
-
-/*
-TODO: make this something that's usable in a single invocation from the command line.
-
-for now, open a node console, paste the above code in, and then do something like the following:
-> downloadPromise = downloadAllRdfForGroup('ucdavis')
-
-and you should end up with something like:
-
-$ tree sinopia_export/
-sinopia_export/
-└── ucdavis_2019-07-26T01:41:00.002Z
-    ├── 0c9895ff-9470-4c70-bee4-b791ee179b34
-    └── complete.log
-
-each RDF resource will have its own file.  complete.log will be written at the end of a successful run.
-
-also TODO:  any error handling at all!
-*/
-
-
