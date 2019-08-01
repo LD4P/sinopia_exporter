@@ -1,3 +1,5 @@
+// Copyright 2019 Stanford University see LICENSE for license
+
 const fs = require('fs');
 const path = require('path');
 const SinopiaServer = require('sinopia_server')
