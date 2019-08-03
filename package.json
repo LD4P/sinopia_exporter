@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "description": "Export RDF entities from a group in Sinopia Server (Sinopia's particular configuration of trellis-ext-db)",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "jest-cov": "jest --coverage --colors --silent --runInBand",
+    "jest-ci": "jest  --colors --silent --ci --runInBand --coverage --reporters=default --reporters=jest-junit && cat ./coverage/lcov.info | coveralls",
+    "test": "jest --colors --silent --runInBand --detectOpenHandles",
+    "test-verbose": "jest --colors --runInBand"
   },
   "engines": {
     "node": "10.12.x"

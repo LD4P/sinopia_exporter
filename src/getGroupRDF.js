@@ -6,9 +6,18 @@ import config from 'config'
 import SinopiaServer from 'sinopia_server'
 
 
-const instance = new SinopiaServer.LDPApi()
-instance.apiClient.basePath = config.get('trellis.basePath')
-console.info(`Sinopia Server base URL: ${instance.apiClient.basePath}`)
+var clientInstance = null
+
+// lazy instantiation of the client makes mocking its behavior easier
+export const sinopiaClient = () => {
+  if(!clientInstance) {
+    clientInstance = new SinopiaServer.LDPApi()
+    clientInstance.apiClient.basePath = config.get('trellis.basePath')
+    console.debug(`Sinopia Server client lazily instantiated.  base URL: ${clientInstance.apiClient.basePath}`)
+  }
+
+  return clientInstance
+}
 
 
 const resourceToName = (uri) => {
@@ -27,7 +36,7 @@ const getSavePathString = (groupName) => {
 
 
 const listGroupRdfEntityUris = async (groupName) => {
-  const groupResponse = await instance.getGroupWithHttpInfo(groupName)
+  const groupResponse = await sinopiaClient().getGroupWithHttpInfo(groupName)
   if(!groupResponse.response.body.contains) {
     return
   }
@@ -42,10 +51,10 @@ const listGroupRdfEntityNames = async (groupName) => {
 
 const getRdfResourceFromServer = async (groupName, resourceName, accept = 'application/ld+json') => {
   // TODO: do we need to do any error handling in case we request a resource that's not RDF?
-  return await instance.getResourceWithHttpInfo(groupName, resourceName, { accept })
+  return await sinopiaClient().getResourceWithHttpInfo(groupName, resourceName, { accept })
 }
 
-const getResourceTextFromServer = async(groupName, resourceName) => {
+export const getResourceTextFromServer = async(groupName, resourceName) => {
   return (await getRdfResourceFromServer(groupName, resourceName)).response.text
 }
 
