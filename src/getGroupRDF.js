@@ -1,7 +1,6 @@
 // Copyright 2019 Stanford University see LICENSE for license
 
 import fs from 'fs'
-import path from 'path'
 import config from 'config'
 import SinopiaServer from 'sinopia_server'
 

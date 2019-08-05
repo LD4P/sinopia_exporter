@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Export RDF entities from a group in Sinopia Server (Sinopia's particular configuration of trellis-ext-db)",
   "scripts": {
+    "eslint": "eslint --max-warnings 5 --color -c .eslintrc.js --ext js,jsx .",
+    "eslint-fix": "eslint --max-warnings 5 --color -c .eslintrc.js --ext js,jsx --fix .",
+    "eslint-fix-single": "eslint --color -c .eslintrc.js --fix",
     "jest-cov": "jest --coverage --colors --silent --runInBand",
     "jest-ci": "jest  --colors --silent --ci --runInBand --coverage --reporters=default --reporters=jest-junit && cat ./coverage/lcov.info | coveralls",
     "test": "jest --colors --silent --runInBand --detectOpenHandles",
