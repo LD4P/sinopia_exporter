@@ -1,14 +1,21 @@
+import config from 'config'
 import * as getGroupRDF from '../src/getGroupRDF'
 import SinopiaServer from 'sinopia_server'
 
 const mockSinopiaClient = jest.fn()
 mockSinopiaClient.getGroupWithHttpInfo = jest.fn()
 mockSinopiaClient.getResourceWithHttpInfo = jest.fn()
-mockSinopiaClient.apiClient = jest.fn() //TODO: test that .basePath gets set correctly on this
+mockSinopiaClient.apiClient = jest.fn()
 
 jest.spyOn(SinopiaServer, 'LDPApi').mockImplementation(() => mockSinopiaClient)
 
 describe('getGroupRDF', () => {
+  describe('sinopiaClient', () => {
+    it('returns a client that is properly configured', () => {
+      expect(getGroupRDF.sinopiaClient().apiClient.basePath).toEqual(config.get('trellis.basePath'))
+    })
+  })
+
   describe('getResourceTextFromServer', () => {
     it('retrieves the specified resource from the server and returns the RDF as text', async () => {
       const groupResources = { 'group1': ['resource1', 'resource2', 'resource3'] }
