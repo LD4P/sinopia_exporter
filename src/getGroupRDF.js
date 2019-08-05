@@ -30,8 +30,14 @@ const getDateString = () => {
   return (new Date()).toISOString()
 }
 
-const getSavePathString = (groupName) => {
-  return `./sinopia_export/${groupName}_${getDateString()}/`
+const initAndGetSavePath = (groupName) => {
+  // the { recursive: true } option did not work for me with mkdirSync (JM), so DIYing it
+  if(!fs.existsSync(config.get('exportBasePath')))
+    fs.mkdirSync(config.get('exportBasePath'))
+
+  const savePathString = `${config.get('exportBasePath')}/${groupName}_${getDateString()}`
+  fs.mkdirSync(savePathString)
+  return savePathString
 }
 
 
@@ -68,8 +74,7 @@ const saveResourceTextFromServer = async(savePathString, groupName, resourceName
 export const downloadAllRdfForGroup = async (groupName) => {
   const entityNames = await listGroupRdfEntityNames(groupName)
 
-  const savePathString = getSavePathString(groupName)
-  fs.mkdirSync(savePathString)
+  const savePathString = initAndGetSavePath(groupName)
 
   await Promise.all(entityNames.map((entityName) => saveResourceTextFromServer(savePathString, groupName, entityName)))
 

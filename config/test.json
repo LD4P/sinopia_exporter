@@ -1,0 +1,6 @@
+{
+  "trellis": {
+    "basePath": "https://trellis.sinopia.test"
+  },
+  "exportBasePath": "./test_exported_rdf"
+}
