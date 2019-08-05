@@ -1,0 +1,61 @@
+# Copyright 2019 Stanford University see LICENSE file
+# CircleCI 2.0 configuration file
+
+defaults: &defaults
+  docker:
+    - image: circleci/node:10.15.3
+  working_directory: ~/sinopia_exporter
+
+version: 2
+jobs:
+  dependencies:
+    <<: *defaults
+    steps:
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@5'
+      - checkout
+      - restore_cache:
+          key: dependency-cache-prod-{{ checksum "package.json" }}
+      - run: npm install --only=production
+      - save_cache:
+          key: dependency-cache-prod-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - restore_cache:
+          key: dependency-cache-ci-{{ checksum "package.json" }}
+      - run: npm install # including CI/Test dependencies
+      - save_cache:
+          key: dependency-cache-ci-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          key: dependency-cache-ci-{{ checksum "package.json" }}
+      - run:
+          name: Run linter (eslint)
+          command: npm run eslint
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Run jest unit tests
+          command: |
+            ./cc-test-reporter before-build
+            npm run jest-ci
+            ./cc-test-reporter after-build --exit-code $?
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - dependencies
+      - build:
+          requires:
+            - dependencies
