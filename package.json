@@ -6,8 +6,8 @@
     "eslint": "eslint --max-warnings 5 --color -c .eslintrc.js --ext js,jsx .",
     "eslint-fix": "eslint --max-warnings 5 --color -c .eslintrc.js --ext js,jsx --fix .",
     "eslint-fix-single": "eslint --color -c .eslintrc.js --fix",
-    "jest-cov": "jest --coverage --colors --silent --runInBand",
-    "jest-ci": "jest  --colors --silent --ci --runInBand --coverage --reporters=default --reporters=jest-junit && cat ./coverage/lcov.info | coveralls",
+    "jest-cov": "jest --colors --coverage --runInBand",
+    "jest-ci": "jest --colors --ci --coverage --runInBand",
     "test": "jest --colors --silent --runInBand --detectOpenHandles",
     "test-verbose": "jest --colors --runInBand"
   },
