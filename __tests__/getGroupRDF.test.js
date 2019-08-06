@@ -1,3 +1,5 @@
+// Copyright 2019 Stanford University see LICENSE for license
+
 import config from 'config'
 import fs from 'fs'
 import * as getGroupRDF from '../src/getGroupRDF'
