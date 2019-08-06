@@ -41,7 +41,7 @@ describe('getGroupRDF', () => {
       // RDF for group exported to subdirectory with name like 'group1_2019-08-05T01:34:13.143Z'
       const groupDirDate = new Date(/^group1_(.*)$/.exec(groupDirName)[1])
       // .toBeGreaterThan and .toBeLessThan only work for numbers
-      expect(dlDateLowerBound < groupDirDate && groupDirDate < dlDateUpperBound).toBeTruthy()
+      expect(dlDateLowerBound <= groupDirDate && groupDirDate <= dlDateUpperBound).toBeTruthy()
 
       const groupDirPath = `./${config.get('exportBasePath')}/${groupDirName}`
       const groupDirContents = fs.readdirSync(groupDirPath)
