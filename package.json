@@ -32,7 +32,7 @@
     "@babel/node": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
     "@babel/runtime": "^7.5.5",
-    "config": "^3.2.2",
+    "config": "^3.2.3",
     "sinopia_server": "^3.0.0-beta5"
   },
   "devDependencies": {
