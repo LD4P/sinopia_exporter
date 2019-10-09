@@ -29,7 +29,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@babel/core": "^7.6.3",
-    "@babel/node": "^7.6.2",
+    "@babel/node": "^7.6.3",
     "@babel/preset-env": "^7.6.3",
     "@babel/runtime": "^7.6.3",
     "config": "^3.2.3",
