@@ -29,13 +29,12 @@ const getDateString = () => {
   return (new Date()).toISOString()
 }
 
-const initAndGetSavePath = (groupName) => {
-  // the { recursive: true } option did not work for me with mkdirSync (JM), so DIYing it
-  if(!fs.existsSync(config.get('exportBasePath')))
-    fs.mkdirSync(config.get('exportBasePath'))
+const initAndGetSavePath = (groupName, exportBasePath) => {
+  if(!exportBasePath)
+    exportBasePath = config.get('exportBasePath')
 
-  const savePathString = `${config.get('exportBasePath')}/${groupName}_${getDateString()}`
-  fs.mkdirSync(savePathString)
+  const savePathString = `${exportBasePath}/${groupName}_${getDateString()}`
+  fs.mkdirSync(savePathString, { recursive: true })
   return savePathString
 }
 
