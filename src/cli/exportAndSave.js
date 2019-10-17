@@ -1,7 +1,7 @@
 // Copyright 2019 Stanford University see LICENSE for license
 
 import sinopiaExporter from '../../package'
-import { downloadAllRdfForGroup } from '../getGroupRDF'
+import { downloadAllRdfForGroup, downloadAllRdfForAllGroups } from '../getGroupRDF'
 
 
 const helpText = `
@@ -30,9 +30,17 @@ console.info(`sinopia_exporter v${sinopiaExporter.version}`)
 
 const groupName = process.argv[2]
 if(groupName) {
-  console.info(`beginning export of RDF from group: ${groupName}`)
-  downloadAllRdfForGroup(groupName)
-  console.info(`finished export of RDF from group: ${groupName}`)
+  // TODO: if groupName == '_ALL_', export everything?
+  //  or, some CLI parsing options other than commander:
+  //  https://nodejs.org/en/knowledge/command-line/how-to-parse-command-line-arguments/  (talks about yargs)
+  //    https://github.com/yargs/yargs
+  //  https://github.com/ankurdubey521/CommandLineParser
+  //  https://duckduckgo.com/?q=javascript+command+line+parser&t=ffab&ia=web
+  if(groupName == '_ALL_') {
+    downloadAllRdfForAllGroups()
+  } else {
+    downloadAllRdfForGroup(groupName)
+  }
 } else {
   console.error(helpText)
   console.error('\nIt appears that no group name was specified.')

@@ -42,7 +42,7 @@ const initAndGetSavePath = (groupName, exportBasePath) => {
 const listGroupRdfEntityUris = async (groupName) => {
   const groupResponse = await sinopiaClient().getGroupWithHttpInfo(groupName)
   if(!groupResponse.response.body.contains) {
-    return
+    return []
   }
 
   return [].concat(groupResponse.response.body.contains)
@@ -54,7 +54,6 @@ const listGroupRdfEntityNames = async (groupName) => {
 
 
 const getRdfResourceFromServer = async (groupName, resourceName, accept = 'application/ld+json') => {
-  // TODO: do we need to do any error handling in case we request a resource that's not RDF?
   return await sinopiaClient().getResourceWithHttpInfo(groupName, resourceName, { accept })
 }
 
@@ -69,14 +68,52 @@ const saveResourceTextFromServer = async(savePathString, groupName, resourceName
   fs.writeFileSync(`${savePathString}/${resourceName}`, (await getResourceTextFromServer(groupName, resourceName)))
 }
 
-export const downloadAllRdfForGroup = async (groupName) => {
-  const entityNames = await listGroupRdfEntityNames(groupName)
+export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
+  console.info(`beginning export of RDF from group: ${groupName}`)
 
-  const savePathString = initAndGetSavePath(groupName)
+  // if we can't get a list of entities to try to download, just log the error and move (in case there are other groups to download)
+  const entityNames = await listGroupRdfEntityNames(groupName).catch((err) => {
+    console.error(`error listing entities for group: ${groupName} : ${err.stack}`)
+  })
+  if (!entityNames) return
 
-  await Promise.all(entityNames.map((entityName) => saveResourceTextFromServer(savePathString, groupName, entityName)))
+  const savePathString = initAndGetSavePath(groupName, containingDir)
+
+  await Promise.all(
+    entityNames.map(
+      (entityName) => saveResourceTextFromServer(savePathString, groupName, entityName).catch(
+        // just log and proceed so that we move on and download what we can
+        (err) => console.error(`error saving resource ${groupName}/${entityName} to ${savePathString} : ${err.stack}`)
+      )
+    )
+  )
 
   const completionMsg = `completed export of ${groupName} at ${getDateString()}`
   fs.writeFileSync(`${savePathString}/complete.log`, completionMsg)
-  console.log(completionMsg)
+  console.info(completionMsg)
+  console.info(`finished export of RDF from group: ${groupName}`)
+}
+
+const listAllGroups = async () => {
+  const baseResponse = await sinopiaClient().getBaseWithHttpInfo()
+  return baseResponse.response.body.contains.map((uri) => resourceToName(uri))
+}
+
+export const downloadAllRdfForAllGroups = async () => {
+  console.info('beginning export of RDF from all groups')
+
+  // if we can't get a list of groups for which to try to download RDF, we can't do anything else
+  const groupList = await listAllGroups().catch((err) => {
+    console.error(`error listing groups in base container: ${err.stack}`)
+  })
+  if (!groupList) return
+
+  console.info(`exporting groups:  ${groupList}`)
+  const containingDir = initAndGetSavePath('sinopia_export_all')
+  await Promise.all(groupList.map((groupName) => downloadAllRdfForGroup(groupName, containingDir)))
+
+  const completionMsg = `completed export of all groups at ${getDateString()}`
+  fs.writeFileSync(`${containingDir}/complete.log`, completionMsg)
+  console.info(completionMsg)
+  console.info('finished export of RDF from all groups')
 }
