@@ -70,6 +70,44 @@ describe('getGroupRDF', () => {
       const completionLogDate = new Date(/^completed export of group1 at (.*)$/.exec(completionLogText)[1])
       expect(groupDirDate <= completionLogDate && completionLogDate <= dlDateUpperBound).toBeTruthy()
     })
+
+    describe('error handling behavior', () => {
+      const consoleErrSpy = jest.spyOn(console, 'error')
+      const originalGetBaseWithHttpInfo = mockSinopiaClient.getBaseWithHttpInfo
+      const originalGetGroupWithHttpInfo = mockSinopiaClient.getGroupWithHttpInfo
+      const originalGetResourceWithHttpInfo = mockSinopiaClient.getResourceWithHttpInfo
+
+      beforeEach(() => {
+        consoleErrSpy.mockReset()
+      })
+      afterEach(() => {
+        mockSinopiaClient.getBaseWithHttpInfo = originalGetBaseWithHttpInfo
+        mockSinopiaClient.getGroupWithHttpInfo = originalGetGroupWithHttpInfo
+        mockSinopiaClient.getResourceWithHttpInfo = originalGetResourceWithHttpInfo
+      })
+
+      it('logs and moves on if a resource errors out', async () => {
+        const errFn = () => {
+          throw new Error("timeout or something")
+        }
+        mockSinopiaClient.getResourceWithHttpInfo = async (groupName, resourceName) => {
+          return (resourceName == 'resource5' ? errFn() : { response: { text: resourceContent[resourceName] } })
+        }
+        await getGroupRDF.downloadAllRdfForGroup('group2')
+
+        const exportBaseDirContents = fs.readdirSync(config.get('exportBasePath'))
+        const groupDirName = exportBaseDirContents.filter((dirName) => dirName.match(/^group2_.*$/)).slice(-1)[0]
+
+        const groupDirPath = `${config.get('exportBasePath')}/${groupDirName}`
+        expect(fs.readdirSync(groupDirPath).length).toEqual(3) // two resources and complete.log
+
+        expect(fs.readFileSync(`${groupDirPath}/resource4`).toString()).toEqual('resource4content')
+        expect(fs.existsSync(`${groupDirPath}/resource5`)).toBe(false)
+        expect(fs.readFileSync(`${groupDirPath}/resource6`).toString()).toEqual('resource6content')
+        const errMsgRegex = new RegExp(`^error saving resource group2/resource5 to ${groupDirPath} : Error: timeout or something`)
+        expect(consoleErrSpy).toHaveBeenCalledWith(expect.stringMatching(errMsgRegex))
+      })
+    })
   })
 
   describe('downloadAllRdfForAllGroups', () => {
@@ -118,6 +156,62 @@ describe('getGroupRDF', () => {
       // completion log text should have date, should fall between group dir creation and downloadAllRdfForGroup resolving
       const completionLogDate = new Date(/^completed export of all groups at (.*)$/.exec(completionLogText)[1])
       expect(containingDirDate <= completionLogDate && completionLogDate <= dlDateUpperBound).toBeTruthy()
+    })
+
+    describe('error handling behavior', () => {
+      const consoleErrSpy = jest.spyOn(console, 'error')
+      const originalGetBaseWithHttpInfo = mockSinopiaClient.getBaseWithHttpInfo
+      const originalGetGroupWithHttpInfo = mockSinopiaClient.getGroupWithHttpInfo
+      const originalGetResourceWithHttpInfo = mockSinopiaClient.getResourceWithHttpInfo
+
+      beforeEach(() => {
+        consoleErrSpy.mockReset()
+      })
+      afterEach(() => {
+        mockSinopiaClient.getBaseWithHttpInfo = originalGetBaseWithHttpInfo
+        mockSinopiaClient.getGroupWithHttpInfo = originalGetGroupWithHttpInfo
+        mockSinopiaClient.getResourceWithHttpInfo = originalGetResourceWithHttpInfo
+      })
+
+      const errFn = () => {
+        throw new Error("timeout or something")
+      }
+
+      it('logs and moves on if listing resources in a group errors out', async () => {
+        mockSinopiaClient.getGroupWithHttpInfo = async (groupName) => {
+          return (groupName == 'group1' ? errFn() : { response: { body: {contains: groupResources[groupName] } } })
+        }
+        await getGroupRDF.downloadAllRdfForAllGroups()
+
+        const exportBaseDirContents = fs.readdirSync(config.get('exportBasePath'))
+        const containingDirName = exportBaseDirContents.filter((dirName) => dirName.match(/^sinopia_export_all_.*$/)).slice(-1)[0]
+
+        // list the group subdirectories in the containing directory.  should have as many entries as there are groups
+        const containingDirPath = `${config.get('exportBasePath')}/${containingDirName}`
+        expect(fs.readdirSync(containingDirPath).length).toEqual(3) // 2 groups, plus complete.log
+        const exportAllDirContents = fs.readdirSync(containingDirPath)
+
+        const group1Dir = exportAllDirContents.find((dirName) => dirName.startsWith('group1'))
+        expect(fs.existsSync(`${containingDirPath}/${group1Dir}`)).toBe(false)
+        const group2Dir = exportAllDirContents.find((dirName) => dirName.startsWith('group2'))
+        expect(fs.readFileSync(`${containingDirPath}/${group2Dir}/resource4`).toString()).toEqual('resource4content') // spot check
+        const group3Dir = exportAllDirContents.find((dirName) => dirName.startsWith('group3'))
+        expect(fs.readFileSync(`${containingDirPath}/${group3Dir}/resource7`).toString()).toEqual('resource7content') // spot check
+
+        const errMsgRegex = new RegExp(`^error listing entities for group: group1 : Error: timeout or something`)
+        expect(consoleErrSpy).toHaveBeenCalledWith(expect.stringMatching(errMsgRegex))
+      })
+
+      it('logs an error if listing groups on the base errors out', async () => {
+        mockSinopiaClient.getBaseWithHttpInfo = async () => { errFn() }
+        const dlDateLowerBound = new Date()
+        await getGroupRDF.downloadAllRdfForAllGroups()
+
+        const errMsgRegex = new RegExp(`^error listing groups in base container: Error: timeout or something`)
+        expect(consoleErrSpy).toHaveBeenCalledWith(expect.stringMatching(errMsgRegex))
+
+        expect(fs.statSync(config.get('exportBasePath')).mtime <= dlDateLowerBound).toBe(true)
+      })
     })
   })
 })
