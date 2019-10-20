@@ -28,7 +28,7 @@ afterAll(async () => {
   // according to:  https://nodejs.org/api/fs.html#fs_fs_rmdirsync_path_options
   //  "Recursive removal is experimental", and is considered "Stability: 1" (https://nodejs.org/api/documentation.html#documentation_stability_index).
   //  but it seems to work fine for me locally (JM 2019-10-19), and cleanup is nice.
-  fs.rmdirSync(`./${config.get('exportBasePath')}`, { recursive: true})
+  fs.rmdirSync(config.get('exportBasePath'), { recursive: true})
 })
 
 describe('getGroupRDF', () => {
@@ -50,7 +50,7 @@ describe('getGroupRDF', () => {
       await getGroupRDF.downloadAllRdfForGroup('group1')
       const dlDateUpperBound = new Date()
 
-      const exportBaseDirContents = fs.readdirSync(`./${config.get('exportBasePath')}`)
+      const exportBaseDirContents = fs.readdirSync(config.get('exportBasePath'))
       const groupDirName = exportBaseDirContents.filter((dirName) => dirName.match(/^group1_.*$/)).slice(-1)[0]
 
       // RDF for group exported to subdirectory with name like 'group1_2019-08-05T01:34:13.143Z'
@@ -58,7 +58,7 @@ describe('getGroupRDF', () => {
       // .toBeGreaterThan and .toBeLessThan only work for numbers
       expect(dlDateLowerBound <= groupDirDate && groupDirDate <= dlDateUpperBound).toBeTruthy()
 
-      const groupDirPath = `./${config.get('exportBasePath')}/${groupDirName}`
+      const groupDirPath = `${config.get('exportBasePath')}/${groupDirName}`
       const groupDirContents = fs.readdirSync(groupDirPath)
       expect(groupDirContents).toEqual(['complete.log', 'resource1', 'resource2', 'resource3'])
 
@@ -78,7 +78,7 @@ describe('getGroupRDF', () => {
       await getGroupRDF.downloadAllRdfForAllGroups()
       const dlDateUpperBound = new Date()
 
-      const exportBaseDirContents = fs.readdirSync(`./${config.get('exportBasePath')}`)
+      const exportBaseDirContents = fs.readdirSync(config.get('exportBasePath'))
       const containingDirName = exportBaseDirContents.filter((dirName) => dirName.match(/^sinopia_export_all_.*$/)).slice(-1)[0]
 
       // containing directory for all exported RDF with name like 'sinopia_export_all_2019-10-18T02:15:41.670Z'
@@ -87,7 +87,7 @@ describe('getGroupRDF', () => {
       expect(dlDateLowerBound <= containingDirDate && containingDirDate <= dlDateUpperBound).toBeTruthy()
 
       // list the group subdirectories in the containing directory.  should have as many entries as there are groups
-      const containingDirPath = `./${config.get('exportBasePath')}/${containingDirName}`
+      const containingDirPath = `${config.get('exportBasePath')}/${containingDirName}`
       const exportAllDirContents = fs.readdirSync(containingDirPath)
       expect(exportAllDirContents.length).toEqual(Object.keys(groupResources).length + 1) // each resource, plus complete.log
 
@@ -95,7 +95,7 @@ describe('getGroupRDF', () => {
         // RDF for group exported to subdirectory with name like 'group1_2019-08-05T01:34:13.143Z'
         const groupDirNameRE = new RegExp(`^${groupName}_(.*)$`)
         const groupDirName = exportAllDirContents.find((dirEntry) => dirEntry.match(groupDirNameRE))
-        const groupDirPath = `./${config.get('exportBasePath')}/${containingDirName}/${groupDirName}`
+        const groupDirPath = `${config.get('exportBasePath')}/${containingDirName}/${groupDirName}`
         const groupDirDate = new Date(groupDirNameRE.exec(groupDirName)[1])
         expect(containingDirDate <= groupDirDate && groupDirDate <= dlDateUpperBound).toBeTruthy()
 
