@@ -23,6 +23,36 @@ exported_rdf/
   the time at which the export was run.
 * Each RDF resource will have its own file (named for the resource).
 * complete.log will be written at the end of a successful run.
+
+
+alternatively, instead of a group, you can export from all groups by specifying
+'_ALL_' instead of a group name, e.g.:
+
+$ ./bin/export '_ALL_'
+
+...which should leave you with output similar to what's described above, but with a
+directory for each group, all inside of one containing directory for the export, named
+'sinopia_export_all_<date>', e.g.:
+
+$ tree exported_rdf/
+exported_rdf/
+└── sinopia_export_all_2019-10-20T07:29:16.412Z
+    ├── complete.log
+    ├── group1_2019-10-20T07:29:16.412Z
+    │   ├── complete.log
+    │   ├── resource1
+    │   ├── resource2
+    │   └── resource3
+    ├── group2_2019-10-20T07:29:16.412Z
+    │   ├── complete.log
+    │   ├── resource4
+    │   ├── resource5
+    │   └── resource6
+    └── group3_2019-10-20T07:29:16.412Z
+        ├── complete.log
+        ├── resource7
+        ├── resource8
+        └── resource9
 `
 
 
@@ -30,12 +60,7 @@ console.info(`sinopia_exporter v${sinopiaExporter.version}`)
 
 const groupName = process.argv[2]
 if(groupName) {
-  // TODO: if groupName == '_ALL_', export everything?
-  //  or, some CLI parsing options other than commander:
-  //  https://nodejs.org/en/knowledge/command-line/how-to-parse-command-line-arguments/  (talks about yargs)
-  //    https://github.com/yargs/yargs
-  //  https://github.com/ankurdubey521/CommandLineParser
-  //  https://duckduckgo.com/?q=javascript+command+line+parser&t=ffab&ia=web
+  // TODO: better command line parsing with yargs, see https://github.com/LD4P/sinopia_exporter/issues/38
   if(groupName == '_ALL_') {
     downloadAllRdfForAllGroups()
   } else {
