@@ -1,18 +1,18 @@
 {
   "name": "sinopia_exporter",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Export RDF entities from a group in Sinopia Server (Sinopia's particular configuration of trellis-ext-db)",
   "scripts": {
-    "eslint": "eslint --max-warnings 5 --color -c .eslintrc.js --ext js,jsx .",
-    "eslint-fix": "eslint --max-warnings 5 --color -c .eslintrc.js --ext js,jsx --fix .",
+    "eslint": "eslint --max-warnings 0 --color -c .eslintrc.js --ext js,jsx .",
+    "eslint-fix": "eslint --max-warnings 0 --color -c .eslintrc.js --ext js,jsx --fix .",
     "eslint-fix-single": "eslint --color -c .eslintrc.js --fix",
     "jest-cov": "jest --colors --coverage --runInBand",
     "jest-ci": "jest --colors --ci --coverage --runInBand",
-    "test": "jest --colors --silent --runInBand --detectOpenHandles",
+    "test": "jest --colors --coverage --silent --runInBand --detectOpenHandles",
     "test-verbose": "jest --colors --runInBand"
   },
   "engines": {
-    "node": "10.12.x"
+    "node": "12.12.x"
   },
   "keywords": [
     "RDF",

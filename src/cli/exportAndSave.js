@@ -1,7 +1,7 @@
 // Copyright 2019 Stanford University see LICENSE for license
 
 import sinopiaExporter from '../../package'
-import { downloadAllRdfForGroup } from '../getGroupRDF'
+import { downloadAllRdfForGroup, downloadAllRdfForAllGroups } from '../getGroupRDF'
 
 
 const helpText = `
@@ -23,6 +23,36 @@ exported_rdf/
   the time at which the export was run.
 * Each RDF resource will have its own file (named for the resource).
 * complete.log will be written at the end of a successful run.
+
+
+alternatively, instead of a group, you can export from all groups by specifying
+'_ALL_' instead of a group name, e.g.:
+
+$ ./bin/export '_ALL_'
+
+...which should leave you with output similar to what's described above, but with a
+directory for each group, all inside of one containing directory for the export, named
+'sinopia_export_all_<date>', e.g.:
+
+$ tree exported_rdf/
+exported_rdf/
+└── sinopia_export_all_2019-10-20T07:29:16.412Z
+    ├── complete.log
+    ├── group1_2019-10-20T07:29:16.412Z
+    │   ├── complete.log
+    │   ├── resource1
+    │   ├── resource2
+    │   └── resource3
+    ├── group2_2019-10-20T07:29:16.412Z
+    │   ├── complete.log
+    │   ├── resource4
+    │   ├── resource5
+    │   └── resource6
+    └── group3_2019-10-20T07:29:16.412Z
+        ├── complete.log
+        ├── resource7
+        ├── resource8
+        └── resource9
 `
 
 
@@ -30,9 +60,12 @@ console.info(`sinopia_exporter v${sinopiaExporter.version}`)
 
 const groupName = process.argv[2]
 if(groupName) {
-  console.info(`beginning export of RDF from group: ${groupName}`)
-  downloadAllRdfForGroup(groupName)
-  console.info(`finished export of RDF from group: ${groupName}`)
+  // TODO: better command line parsing with yargs, see https://github.com/LD4P/sinopia_exporter/issues/38
+  if(groupName == '_ALL_') {
+    downloadAllRdfForAllGroups()
+  } else {
+    downloadAllRdfForGroup(groupName)
+  }
 } else {
   console.error(helpText)
   console.error('\nIt appears that no group name was specified.')
