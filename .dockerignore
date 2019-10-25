@@ -1,0 +1,16 @@
+__mocks__
+.circleci
+.git
+.gitignore
+/.eslint*.*
+build_support
+builds
+coverage
+docs
+development.html
+junit.xml
+npm-debug.log
+setupEnzyme.js
+dist
+node_modules
+.env
