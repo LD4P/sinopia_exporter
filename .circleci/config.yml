@@ -50,12 +50,76 @@ jobs:
             ./cc-test-reporter before-build
             npm run jest-ci
             ./cc-test-reporter after-build --exit-code $?
-
+  register_latest_image:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: # gives us back matching node_modules
+          key: dependencies-prod-{{ checksum "package.json" }}
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build & Register Images
+          # NOTE: the env variables holding docker credentials are stored in the CircleCI dashboard
+          command: |
+            docker build -t ld4p/sinopia_exporter:latest .
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push ld4p/sinopia_exporter:latest
+  register_tag_image:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: # gives us back matching node_modules
+          key: dependencies-prod-{{ checksum "package.json" }}
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build & Register Images
+          command: |
+            docker build -t ld4p/sinopia_exporter:$CIRCLE_TAG .
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push ld4p/sinopia_exporter:$CIRCLE_TAG
 workflows:
   version: 2
   build:
     jobs:
-      - dependencies
+      - dependencies:
+          filters:
+            branches:
+              only:
+                - /.*/
+            tags:
+              only:
+                - /v.*/
       - build:
           requires:
             - dependencies
+          filters:
+            branches:
+              only:
+                - /.*/
+            tags:
+              only:
+                - /v.*/
+      - register_latest_image:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              ignore:
+                - /v.*/
+      - register_tag_image:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - /.*/
+            tags:
+              only:
+                - /v.*/
