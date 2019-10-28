@@ -3,3 +3,4 @@ coverage
 node_modules
 exported_rdf
 test_exported_rdf
+.DS_Store
