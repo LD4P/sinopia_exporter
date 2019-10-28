@@ -14,3 +14,6 @@ setupEnzyme.js
 dist
 node_modules
 .env
+exported_rdf
+test_exported_rdf
+__tests__
