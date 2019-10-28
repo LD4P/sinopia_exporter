@@ -1,5 +1,14 @@
 FROM circleci/node:12.6
 
+USER root
+
+RUN apt-get update \
+  && apt-get install python-pip \
+  && pip install awscli --upgrade
+
+ENV AWS_DEFAULT_REGION us-west-2
+
+USER circleci
 WORKDIR /home/circleci
 
 COPY package.json .
