@@ -1,4 +1,4 @@
-# Sinopia Indexing Pipeline
+# Sinopia Exporter
 
 ## Docker export
 Docker export performs an export of all groups, zips up the results, and exports to S3.
