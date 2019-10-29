@@ -25,7 +25,7 @@ exported_rdf/
 * complete.log will be written at the end of a successful run.
 
 
-alternatively, instead of a group, you can export from all groups by specifying
+Alternatively, instead of a group, you can export from all groups by specifying
 '_ALL_' instead of a group name, e.g.:
 
 $ ./bin/export '_ALL_'
