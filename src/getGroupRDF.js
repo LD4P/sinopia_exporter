@@ -3,6 +3,7 @@
 import fs from 'fs'
 import config from 'config'
 import SinopiaServer from 'sinopia_server'
+import Honeybadger from 'honeybadger'
 
 
 var clientInstance = null
@@ -36,6 +37,19 @@ const initAndGetSavePath = (groupName, exportBasePath) => {
   const savePathString = `${exportBasePath}/${groupName}_${getDateString()}`
   fs.mkdirSync(savePathString, { recursive: true })
   return savePathString
+}
+
+const reportError = (errorObject, consoleErrMessage = null) => {
+  Honeybadger.notify(errorObject, {
+    context: {
+      argv: process.argv,
+      trellisBasePath: config.get('trellis.basePath')
+    }
+  })
+
+  if (consoleErrMessage)
+    console.error(consoleErrMessage)
+
 }
 
 
@@ -73,7 +87,7 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
 
   // if we can't get a list of entities to try to download, just log the error and move (in case there are other groups to download)
   const entityNames = await listGroupRdfEntityNames(groupName).catch((err) => {
-    console.error(`error listing entities for group: ${groupName} : ${err.stack}`)
+    reportError(err, `error listing entities for group: ${groupName} : ${err.stack}`)
   })
   if (!entityNames) return
 
@@ -83,7 +97,7 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
     entityNames.map(
       (entityName) => saveResourceTextFromServer(savePathString, groupName, entityName).catch(
         // just log and proceed so that we move on and download what we can
-        (err) => console.error(`error saving resource ${groupName}/${entityName} to ${savePathString} : ${err.stack}`)
+        (err) => reportError(err, `error saving resource ${groupName}/${entityName} to ${savePathString} : ${err.stack}`)
       )
     )
   )
@@ -104,7 +118,7 @@ export const downloadAllRdfForAllGroups = async () => {
 
   // if we can't get a list of groups for which to try to download RDF, we can't do anything else
   const groupList = await listAllGroups().catch((err) => {
-    console.error(`error listing groups in base container: ${err.stack}`)
+    reportError(err, `error listing groups in base container: ${err.stack}`)
   })
   if (!groupList) return
 

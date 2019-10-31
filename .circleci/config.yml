@@ -63,7 +63,7 @@ jobs:
           name: Build & Register Images
           # NOTE: the env variables holding docker credentials are stored in the CircleCI dashboard
           command: |
-            docker build -t ld4p/sinopia_exporter:latest .
+            docker build -t ld4p/sinopia_exporter:latest --build-arg HONEYBADGER_API_KEY=$HONEYBADGER_API_KEY .
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push ld4p/sinopia_exporter:latest
   register_tag_image:
@@ -78,7 +78,7 @@ jobs:
       - run:
           name: Build & Register Images
           command: |
-            docker build -t ld4p/sinopia_exporter:$CIRCLE_TAG .
+            docker build -t ld4p/sinopia_exporter:$CIRCLE_TAG --build-arg HONEYBADGER_API_KEY=$HONEYBADGER_API_KEY .
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push ld4p/sinopia_exporter:$CIRCLE_TAG
 workflows:
