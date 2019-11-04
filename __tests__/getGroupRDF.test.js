@@ -4,6 +4,7 @@ import config from 'config'
 import fs from 'fs'
 import * as getGroupRDF from '../src/getGroupRDF'
 import SinopiaServer from 'sinopia_server'
+import Honeybadger from 'honeybadger'
 
 const groupResources = {
   'group1': ['resource1', 'resource2', 'resource3'],
@@ -73,12 +74,14 @@ describe('getGroupRDF', () => {
 
     describe('error handling behavior', () => {
       const consoleErrSpy = jest.spyOn(console, 'error')
+      const honeybadgerNotifySpy = jest.spyOn(Honeybadger, 'notify')
       const originalGetBaseWithHttpInfo = mockSinopiaClient.getBaseWithHttpInfo
       const originalGetGroupWithHttpInfo = mockSinopiaClient.getGroupWithHttpInfo
       const originalGetResourceWithHttpInfo = mockSinopiaClient.getResourceWithHttpInfo
 
       beforeEach(() => {
         consoleErrSpy.mockReset()
+        honeybadgerNotifySpy.mockReset()
       })
       afterEach(() => {
         mockSinopiaClient.getBaseWithHttpInfo = originalGetBaseWithHttpInfo
@@ -87,11 +90,12 @@ describe('getGroupRDF', () => {
       })
 
       it('logs and moves on if a resource errors out', async () => {
-        const errFn = () => {
-          throw new Error("timeout or something")
+        const mockRequestErr = new Error("timeout or something")
+        const errFn = (mockRequestErr) => {
+          throw mockRequestErr
         }
         mockSinopiaClient.getResourceWithHttpInfo = async (groupName, resourceName) => {
-          return (resourceName == 'resource5' ? errFn() : { response: { text: resourceContent[resourceName] } })
+          return (resourceName == 'resource5' ? errFn(mockRequestErr) : { response: { text: resourceContent[resourceName] } })
         }
         await getGroupRDF.downloadAllRdfForGroup('group2')
 
@@ -106,6 +110,8 @@ describe('getGroupRDF', () => {
         expect(fs.readFileSync(`${groupDirPath}/resource6`).toString()).toEqual('resource6content')
         const errMsgRegex = new RegExp(`^error saving resource group2/resource5 to ${groupDirPath} : Error: timeout or something`)
         expect(consoleErrSpy).toHaveBeenCalledWith(expect.stringMatching(errMsgRegex))
+        const contextObj = { context: { argv: process.argv, trellisBasePath: config.get('trellis.basePath') } }
+        expect(honeybadgerNotifySpy).toHaveBeenCalledWith(mockRequestErr, contextObj)
       })
     })
   })
@@ -160,12 +166,14 @@ describe('getGroupRDF', () => {
 
     describe('error handling behavior', () => {
       const consoleErrSpy = jest.spyOn(console, 'error')
+      const honeybadgerNotifySpy = jest.spyOn(Honeybadger, 'notify')
       const originalGetBaseWithHttpInfo = mockSinopiaClient.getBaseWithHttpInfo
       const originalGetGroupWithHttpInfo = mockSinopiaClient.getGroupWithHttpInfo
       const originalGetResourceWithHttpInfo = mockSinopiaClient.getResourceWithHttpInfo
 
       beforeEach(() => {
         consoleErrSpy.mockReset()
+        honeybadgerNotifySpy.mockReset()
       })
       afterEach(() => {
         mockSinopiaClient.getBaseWithHttpInfo = originalGetBaseWithHttpInfo
@@ -173,13 +181,14 @@ describe('getGroupRDF', () => {
         mockSinopiaClient.getResourceWithHttpInfo = originalGetResourceWithHttpInfo
       })
 
-      const errFn = () => {
-        throw new Error("timeout or something")
+      const errFn = (mockErr) => {
+        throw mockErr
       }
 
       it('logs and moves on if listing resources in a group errors out', async () => {
+        const mockRequestErr = new Error("timeout or something")
         mockSinopiaClient.getGroupWithHttpInfo = async (groupName) => {
-          return (groupName == 'group1' ? errFn() : { response: { body: {contains: groupResources[groupName] } } })
+          return (groupName == 'group1' ? errFn(mockRequestErr) : { response: { body: {contains: groupResources[groupName] } } })
         }
         await getGroupRDF.downloadAllRdfForAllGroups()
 
@@ -200,15 +209,20 @@ describe('getGroupRDF', () => {
 
         const errMsgRegex = new RegExp(`^error listing entities for group: group1 : Error: timeout or something`)
         expect(consoleErrSpy).toHaveBeenCalledWith(expect.stringMatching(errMsgRegex))
+        const contextObj = { context: { argv: process.argv, trellisBasePath: config.get('trellis.basePath') } }
+        expect(honeybadgerNotifySpy).toHaveBeenCalledWith(mockRequestErr, contextObj)
       })
 
       it('logs an error if listing groups on the base errors out', async () => {
-        mockSinopiaClient.getBaseWithHttpInfo = async () => { errFn() }
+        const mockRequestErr = new Error("timeout or something")
+        mockSinopiaClient.getBaseWithHttpInfo = async () => { errFn(mockRequestErr) }
         const dlDateLowerBound = new Date()
         await getGroupRDF.downloadAllRdfForAllGroups()
 
         const errMsgRegex = new RegExp(`^error listing groups in base container: Error: timeout or something`)
         expect(consoleErrSpy).toHaveBeenCalledWith(expect.stringMatching(errMsgRegex))
+        const contextObj = { context: { argv: process.argv, trellisBasePath: config.get('trellis.basePath') } }
+        expect(honeybadgerNotifySpy).toHaveBeenCalledWith(mockRequestErr, contextObj)
 
         expect(fs.statSync(config.get('exportBasePath')).mtime <= dlDateLowerBound).toBe(true)
       })

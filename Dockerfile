@@ -1,5 +1,7 @@
 FROM circleci/node:12.6
 
+ARG HONEYBADGER_API_KEY
+
 USER root
 
 RUN apt-get update \
