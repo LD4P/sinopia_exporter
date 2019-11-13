@@ -67,8 +67,8 @@ const listGroupRdfEntityNames = async (groupName) => {
 }
 
 
-const getRdfResourceFromServer = async (groupName, resourceName, accept = 'application/ld+json') => {
-  return await sinopiaClient().getResourceWithHttpInfo(groupName, resourceName, { accept })
+const getRdfResourceFromServer = async (groupName, resourceName, accept = 'application/ld+json', prefer = 'return=representation; include="http://www.trellisldp.org/ns/trellis#PreferAudit"') => {
+  return await sinopiaClient().getResourceWithHttpInfo(groupName, resourceName, { accept, prefer })
 }
 
 export const getResourceTextFromServer = async(groupName, resourceName) => {
