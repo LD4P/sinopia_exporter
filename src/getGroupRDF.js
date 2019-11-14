@@ -1,16 +1,16 @@
 // Copyright 2019 Stanford University see LICENSE for license
 
-import fs from 'fs'
-import config from 'config'
-import SinopiaServer from 'sinopia_server'
 import Honeybadger from 'honeybadger'
+import SinopiaServer from 'sinopia_server'
+import asyncPool from 'tiny-async-pool'
+import config from 'config'
+import fs from 'fs'
 
-
-var clientInstance = null
+let clientInstance = null
 
 // lazy instantiation of the client makes mocking its behavior easier
 export const sinopiaClient = () => {
-  if(!clientInstance) {
+  if (!clientInstance) {
     clientInstance = new SinopiaServer.LDPApi()
     clientInstance.apiClient.basePath = config.get('trellis.basePath')
     console.debug(`Sinopia Server client lazily instantiated.  base URL: ${clientInstance.apiClient.basePath}`)
@@ -18,7 +18,6 @@ export const sinopiaClient = () => {
 
   return clientInstance
 }
-
 
 const resourceToName = (uri) => {
   if (typeof uri !== 'string') return undefined
@@ -31,7 +30,7 @@ const getDateString = () => {
 }
 
 const initAndGetSavePath = (groupName, exportBasePath) => {
-  if(!exportBasePath)
+  if (!exportBasePath)
     exportBasePath = config.get('exportBasePath')
 
   const savePathString = `${exportBasePath}/${groupName}_${getDateString()}`
@@ -49,13 +48,11 @@ const reportError = (errorObject, consoleErrMessage = null) => {
 
   if (consoleErrMessage)
     console.error(consoleErrMessage)
-
 }
-
 
 const listGroupRdfEntityUris = async (groupName) => {
   const groupResponse = await sinopiaClient().getGroupWithHttpInfo(groupName)
-  if(!groupResponse.response.body.contains) {
+  if (!groupResponse.response.body.contains) {
     return []
   }
 
@@ -66,7 +63,6 @@ const listGroupRdfEntityNames = async (groupName) => {
   return (await listGroupRdfEntityUris(groupName)).map((uri) => resourceToName(uri))
 }
 
-
 const getRdfResourceFromServer = async (groupName, resourceName, accept = 'application/ld+json', prefer = 'return=representation; include="http://www.trellisldp.org/ns/trellis#PreferAudit"') => {
   return await sinopiaClient().getResourceWithHttpInfo(groupName, resourceName, { accept, prefer })
 }
@@ -74,8 +70,6 @@ const getRdfResourceFromServer = async (groupName, resourceName, accept = 'appli
 export const getResourceTextFromServer = async(groupName, resourceName) => {
   return (await getRdfResourceFromServer(groupName, resourceName)).response.text
 }
-
-
 
 const saveResourceTextFromServer = async(savePathString, groupName, resourceName) => {
   // alternatively, could await https://nodejs.org/api/fs.html#fs_fspromises_writefile_file_data_options
@@ -85,7 +79,7 @@ const saveResourceTextFromServer = async(savePathString, groupName, resourceName
 export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   console.info(`beginning export of RDF from group: ${groupName}`)
 
-  // if we can't get a list of entities to try to download, just log the error and move (in case there are other groups to download)
+  // if we can't get a list of entities to try to download, just log the error and move on (in case there are other groups to download)
   const entityNames = await listGroupRdfEntityNames(groupName).catch((err) => {
     reportError(err, `error listing entities for group: ${groupName} : ${err.stack}`)
   })
@@ -93,13 +87,14 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
 
   const savePathString = initAndGetSavePath(groupName, containingDir)
 
-  await Promise.all(
-    entityNames.map(
-      (entityName) => saveResourceTextFromServer(savePathString, groupName, entityName).catch(
+  await asyncPool(
+    config.get('trellis.poolLimit'), // the # of concurrent connections in the pool
+    entityNames, // the array of values to feed into the async operation
+    (entityName) => saveResourceTextFromServer(savePathString, groupName, entityName) // the async operation
+      .catch(
         // just log and proceed so that we move on and download what we can
         (err) => reportError(err, `error saving resource ${groupName}/${entityName} to ${savePathString} : ${err.stack}`)
       )
-    )
   )
 
   const completionMsg = `completed export of ${groupName} at ${getDateString()}`
@@ -124,7 +119,11 @@ export const downloadAllRdfForAllGroups = async () => {
 
   console.info(`exporting groups:  ${groupList}`)
   const containingDir = initAndGetSavePath('sinopia_export_all')
-  await Promise.all(groupList.map((groupName) => downloadAllRdfForGroup(groupName, containingDir)))
+  await asyncPool(
+    config.get('trellis.poolLimit'), // the # of concurrent connections in the pool
+    groupList, // the array of values to feed into the async operation
+    (groupName) => downloadAllRdfForGroup(groupName, containingDir) // the async operation
+  )
 
   const completionMsg = `completed export of all groups at ${getDateString()}`
   fs.writeFileSync(`${containingDir}/complete.log`, completionMsg)
