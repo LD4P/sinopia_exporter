@@ -67,8 +67,33 @@ const getRdfResourceFromServer = async (groupName, resourceName, accept = 'appli
   return await sinopiaClient().getResourceWithHttpInfo(groupName, resourceName, { accept, prefer })
 }
 
+export const buildUri = (groupName, resourceName) => {
+  return `${sinopiaClient().apiClient.basePath}/repository/${groupName}/${resourceName}`
+}
+
+const addSubjectToResource = (resourceJson, resourceUri) => {
+  const resource = JSON.parse(resourceJson)
+  const firstEmptyIdIndex = resource['@graph'].findIndex(obj => obj['@id'] === '')
+
+  // No empty IDs; return resource unmodified
+  if (firstEmptyIdIndex == -1)
+    return resourceJson
+
+  // Inject the URI of the resource
+  // NOTE: `parseInt()` is used here to avoid an eslint security violation
+  resource['@graph'][parseInt(firstEmptyIdIndex)]['@id'] = resourceUri
+  return JSON.stringify(resource)
+}
+
 export const getResourceTextFromServer = async(groupName, resourceName) => {
-  return (await getRdfResourceFromServer(groupName, resourceName)).response.text
+  const resourceJson = (await getRdfResourceFromServer(groupName, resourceName)).response.text
+  const resourceUri = buildUri(groupName, resourceName)
+
+  // TODO: Once https://github.com/LD4P/sinopia_editor/issues/1753 is closed and
+  //       deployed, consider returning `resourceJson` unmodified and removing
+  //       the no-longer-needed `buildUri` and `addSubjectToResource` functions
+  //       above.
+  return addSubjectToResource(resourceJson, resourceUri)
 }
 
 const saveResourceTextFromServer = async(savePathString, groupName, resourceName) => {
