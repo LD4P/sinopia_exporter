@@ -1,6 +1,7 @@
 {
   "trellis": {
-    "basePath": "https://trellis.sinopia.io"
+    "basePath": "https://trellis.sinopia.io",
+    "poolLimit": 2
   },
   "exportBasePath": "./exported_rdf"
 }

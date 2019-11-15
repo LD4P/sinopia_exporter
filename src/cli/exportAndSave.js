@@ -59,9 +59,9 @@ exported_rdf/
 console.info(`sinopia_exporter v${sinopiaExporter.version}`)
 
 const groupName = process.argv[2]
-if(groupName) {
+if (groupName) {
   // TODO: better command line parsing with yargs, see https://github.com/LD4P/sinopia_exporter/issues/38
-  if(groupName == '_ALL_') {
+  if (groupName == '_ALL_') {
     downloadAllRdfForAllGroups()
   } else {
     downloadAllRdfForGroup(groupName)
