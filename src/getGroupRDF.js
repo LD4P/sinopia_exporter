@@ -1,12 +1,16 @@
 // Copyright 2019 Stanford University see LICENSE for license
 
-import Honeybadger from 'honeybadger'
+import honeybadger from 'honeybadger'
 import SinopiaServer from 'sinopia_server'
 import asyncPool from 'tiny-async-pool'
 import config from 'config'
 import fs from 'fs'
 
 let clientInstance = null
+
+const Honeybadger = honeybadger.configure({
+  apiKey: process.env.HONEYBADGER_API_KEY
+})
 
 // lazy instantiation of the client makes mocking its behavior easier
 export const sinopiaClient = () => {
