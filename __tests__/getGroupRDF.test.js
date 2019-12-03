@@ -6,6 +6,15 @@ import * as getGroupRDF from '../src/getGroupRDF'
 import SinopiaServer from 'sinopia_server'
 import Honeybadger from 'honeybadger'
 
+const emptyHttpResult = { response: { body: { } } }
+const mockSinopiaClient = jest.fn()
+mockSinopiaClient.apiClient = jest.fn() // need this field present so sinopiaClient() function can set .basePath on it.
+mockSinopiaClient.getBaseWithHttpInfo = async () => { return { response: { body: {contains: Object.keys(groupResources) } } } }
+mockSinopiaClient.getGroupWithHttpInfo = async (groupName) => { return (!groupResources[groupName] ? emptyHttpResult : { response: { body: {contains: groupResources[groupName] } } }) }
+mockSinopiaClient.getResourceWithHttpInfo = async (groupName, resourceName) => { return (!groupResources[groupName] ? emptyHttpResult : { response: { text: resourceContent[resourceName] } }) }
+
+jest.spyOn(SinopiaServer, 'LDPApi').mockImplementation(() => mockSinopiaClient)
+
 const groupResources = {
   'group1': ['resource1', 'resource2', 'resource3'],
   'group2': ['resource4', 'resource5', 'resource6'],
@@ -13,23 +22,15 @@ const groupResources = {
 }
 const resourceContent = {
   'resource1': '{"@graph":[{"@id":"","label":"resource1content"}]}',
-  'resource2': '{"@graph":[{"@id":"","label":"resource2content"}]}',
+  'resource2': `{"@graph":[{"@id":"${getGroupRDF.buildUri('group1', 'resource2')}","label":"resource2content"}]}`,
   'resource3': '{"@graph":[{"@id":"","label":"resource3content"}]}',
   'resource4': '{"@graph":[{"@id":"","label":"resource4content"}]}',
   'resource5': '{"@graph":[{"@id":"","label":"resource5content"}]}',
-  'resource6': '{"@graph":[{"@id":"","label":"resource6content"}]}',
-  'resource7': '{"@graph":[{"@id":"","label":"resource7content"}]}',
+  'resource6': `{"@graph":[{"@id":"${getGroupRDF.buildUri('group2', 'resource6')}","label":"resource6content"}]}`,
+  'resource7': `{"@graph":[{"@id":"${getGroupRDF.buildUri('group3', 'resource7')}","label":"resource7content"}]}`,
   'resource8': '{"@graph":[{"@id":"","label":"resource8content"}]}',
   'resource9': '{"@graph":[{"@id":"","label":"resource9content"}]}'
 }
-
-const mockSinopiaClient = jest.fn()
-mockSinopiaClient.apiClient = jest.fn() // need this field present so sinopiaClient() function can set .basePath on it.
-mockSinopiaClient.getBaseWithHttpInfo = async () => { return { response: { body: {contains: Object.keys(groupResources) } } } }
-mockSinopiaClient.getGroupWithHttpInfo = async (groupName) => { return (!groupResources[groupName] ? null : { response: { body: {contains: groupResources[groupName] } } }) }
-mockSinopiaClient.getResourceWithHttpInfo = async (groupName, resourceName) => { return (!groupResources[groupName] ? null : { response: { text: resourceContent[resourceName] } }) }
-
-jest.spyOn(SinopiaServer, 'LDPApi').mockImplementation(() => mockSinopiaClient)
 
 afterAll(async () => {
   // according to:  https://nodejs.org/api/fs.html#fs_fs_rmdirsync_path_options
@@ -80,6 +81,11 @@ describe('getGroupRDF', () => {
       // completion log text should have date, should fall between group dir creation and downloadAllRdfForGroup resolving
       const completionLogDate = new Date(/^completed export of group1 at (.*)$/.exec(completionLogText)[1])
       expect(groupDirDate <= completionLogDate && completionLogDate <= dlDateUpperBound).toBeTruthy()
+    })
+
+    it('returns null when group is missing)', async () => {
+      const foo = await getGroupRDF.downloadAllRdfForGroup('group0')
+      expect(foo).toBeNull()
     })
 
     describe('error handling behavior', () => {

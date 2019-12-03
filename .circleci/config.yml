@@ -33,7 +33,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - setup_remote_docker
       - restore_cache:
           key: dependency-cache-ci-{{ checksum "package.json" }}
       - run:
