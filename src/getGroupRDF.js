@@ -118,7 +118,7 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   }
 
   // This is the behavior when the server returns a 404 response for a missing group
-  if (entityNames.length === 0) {
+  if (!entityNames || entityNames.length === 0) {
     console.error(`group not found: ${groupName}`)
     return null
   }
@@ -150,10 +150,15 @@ export const downloadAllRdfForAllGroups = async () => {
   console.info('beginning export of RDF from all groups')
 
   // if we can't get a list of groups for which to try to download RDF, we can't do anything else
-  const groupList = await listAllGroups().catch((err) => {
+  let groupList
+  try {
+    groupList = await listAllGroups()
+  } catch(err) {
     reportError(err, `error listing groups in base container: ${err.stack}`)
-  })
-  if (!groupList) return
+    return null
+  }
+
+  if (!groupList) return null
 
   console.info(`exporting groups:  ${groupList}`)
   const containingDir = initAndGetSavePath('sinopia_export_all')
