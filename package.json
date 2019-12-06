@@ -28,7 +28,7 @@
   "author": "Johnathan Martin <john.martin@stanford.edu>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@babel/core": "^7.7.4",
+    "@babel/core": "^7.7.5",
     "@babel/node": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
     "@babel/runtime": "^7.7.4",
