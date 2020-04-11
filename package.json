@@ -30,7 +30,7 @@
   "dependencies": {
     "@babel/core": "^7.9.0",
     "@babel/node": "^7.8.7",
-    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
     "@babel/runtime": "^7.9.2",
     "config": "^3.3.1",
     "honeybadger": "^1.4.0",
@@ -44,7 +44,7 @@
     "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.4.0",
-    "jest": "^25.2.7",
+    "jest": "^25.3.0",
     "minimist": ">=1.2.2"
   }
 }
