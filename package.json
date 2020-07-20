@@ -28,10 +28,10 @@
   "author": "Johnathan Martin <john.martin@stanford.edu>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@babel/core": "^7.10.3",
-    "@babel/node": "^7.10.3",
+    "@babel/core": "^7.10.5",
+    "@babel/node": "^7.10.5",
     "@babel/preset-env": "^7.10.3",
-    "@babel/runtime": "^7.10.3",
+    "@babel/runtime": "^7.10.5",
     "config": "^3.3.1",
     "honeybadger": "^1.4.0",
     "sinopia_server": "^3.0.3",
