@@ -38,10 +38,10 @@
     "tiny-async-pool": "^1.1.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.10.4",
+    "@babel/plugin-transform-runtime": "^7.10.5",
     "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^23.18.0",
+    "eslint-plugin-jest": "^23.18.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.4.0",
     "jest": "^25.5.4",
