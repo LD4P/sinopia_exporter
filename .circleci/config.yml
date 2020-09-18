@@ -13,7 +13,7 @@ jobs:
     steps:
       - run:
           name: update-npm
-          command: 'sudo npm install -g npm@5'
+          command: 'sudo npm install -g npm@6'
       - checkout
       - restore_cache:
           key: dependency-cache-prod-{{ checksum "package.json" }}
