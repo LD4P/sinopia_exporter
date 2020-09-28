@@ -1,5 +1,8 @@
 {
   "trellis": {
     "basePath": "TRELLIS_BASEPATH"
+  },
+  "sinopia_api": {
+    "basePath": "SINOPIA_API_BASEPATH"
   }
 }

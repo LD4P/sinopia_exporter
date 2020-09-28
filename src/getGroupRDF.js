@@ -5,6 +5,7 @@ import SinopiaServer from 'sinopia_server'
 import asyncPool from 'tiny-async-pool'
 import config from 'config'
 import fs from 'fs'
+import { fetchGroups } from './sinopia_client'
 
 let clientInstance = null
 
@@ -24,6 +25,7 @@ export const sinopiaClient = () => {
 }
 
 const resourceToName = (uri) => {
+  console.log("URI = " + uri)
   if (typeof uri !== 'string') return undefined
 
   return uri.substr(uri.lastIndexOf('/') + 1)
@@ -46,7 +48,7 @@ const reportError = (errorObject, consoleErrMessage = null) => {
   Honeybadger.notify(errorObject, {
     context: {
       argv: process.argv,
-      trellisBasePath: config.get('trellis.basePath')
+      sinopiaApiBasePath: config.get('sinopia_api.basePath')
     }
   })
 
@@ -54,6 +56,7 @@ const reportError = (errorObject, consoleErrMessage = null) => {
     console.error(consoleErrMessage)
 }
 
+// TODO: AMC UPDATE
 const listGroupRdfEntityUris = async (groupName) => {
   const groupResponse = await sinopiaClient().getGroupWithHttpInfo(groupName)
   if (!groupResponse.response.body.contains) {
@@ -126,7 +129,7 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   const savePathString = initAndGetSavePath(groupName, containingDir)
 
   await asyncPool(
-    config.get('trellis.poolLimit'), // the # of concurrent connections in the pool
+    config.get('sinopia_api.poolLimit'), // the # of concurrent connections in the pool
     entityNames, // the array of values to feed into the async operation
     (entityName) => saveResourceTextFromServer(savePathString, groupName, entityName) // the async operation
       .catch(
@@ -142,8 +145,10 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
 }
 
 const listAllGroups = async () => {
-  const baseResponse = await sinopiaClient().getBaseWithHttpInfo()
-  return baseResponse.response.body.contains.map((uri) => resourceToName(uri))
+  // console.log(await fetchGroups())
+  const baseResponse = await fetchGroups() // await sinopiaClient().getBaseWithHttpInfo()
+  console.log(baseResponse[1].data)
+  return baseResponse[1].data.map((uri) => resourceToName(uri.id))
 }
 
 export const downloadAllRdfForAllGroups = async () => {
@@ -163,7 +168,7 @@ export const downloadAllRdfForAllGroups = async () => {
   console.info(`exporting groups:  ${groupList}`)
   const containingDir = initAndGetSavePath('sinopia_export_all')
   await asyncPool(
-    config.get('trellis.poolLimit'), // the # of concurrent connections in the pool
+    config.get('sinopia_api.poolLimit'), // the # of concurrent connections in the pool
     groupList, // the array of values to feed into the async operation
     (groupName) => downloadAllRdfForGroup(groupName, containingDir) // the async operation
   )
