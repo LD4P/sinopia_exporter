@@ -35,7 +35,8 @@
     "config": "^3.3.1",
     "honeybadger": "^1.4.0",
     "sinopia_server": "^3.0.3",
-    "tiny-async-pool": "^1.1.0"
+    "tiny-async-pool": "^1.1.0",
+    "yargs": "^16.0.3"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.11.5",
