@@ -25,7 +25,6 @@ export const sinopiaClient = () => {
 }
 
 const resourceToName = (uri) => {
-  console.log("URI = " + uri)
   if (typeof uri !== 'string') return undefined
 
   return uri.substr(uri.lastIndexOf('/') + 1)
@@ -56,20 +55,12 @@ const reportError = (errorObject, consoleErrMessage = null) => {
     console.error(consoleErrMessage)
 }
 
-// TODO: AMC UPDATE
 const listGroupRdfEntityUris = async (groupName) => {
-  // const groupResponse = await sinopiaClient().getGroupWithHttpInfo(groupName)
   const groupResponse = await fetchResources(groupName)
-  console.log("listGroupRdfEntityUris ==")
-  console.log(groupResponse[1].data)
-  console.log("Looking for URIs")
-  groupResponse[1].data.map((resource) => console.log("new URI = " + resource.uri))
-  // if (!groupResponse.response.body.contains) {
   if (!groupResponse[1].data) {
     return []
   }
 
-  // return [].concat(groupResponse.response.body.contains)
   return [].concat(groupResponse[1].data)
 }
 
@@ -77,44 +68,12 @@ const listGroupRdfEntityNames = async (groupName) => {
   return (await listGroupRdfEntityUris(groupName)).map((resource) => resourceToName(resource.uri))
 }
 
-// const getRdfResourceFromServer = async (groupName, resourceName, accept = 'application/ld+json', prefer = 'return=representation; include="http://www.trellisldp.org/ns/trellis#PreferAudit"') => {
-//   // return await sinopiaClient().getResourceWithHttpInfo(groupName, resourceName, { accept, prefer })
-//   const t = await fetchResource(resourceName)
-//   console.log("getRdfResourceFromServer = " + t)
-//   return t // fetchResource(resourceName)
-// }
-
 export const buildUri = (groupName, resourceName) => {
   return `${sinopiaClient().apiClient.basePath}/repository/${groupName}/${resourceName}`
 }
 
-const addSubjectToResource = (resourceJson, resourceUri) => {
-  console.log("addSubjectToResource = " + resourceJson)
-  const resource = JSON.parse(resourceJson)
-  const firstEmptyIdIndex = resource['@graph'].findIndex(obj => obj['@id'] === '')
-
-  // No empty IDs; return resource unmodified
-  if (firstEmptyIdIndex == -1)
-    return resourceJson
-
-  // Inject the URI of the resource
-  // NOTE: `parseInt()` is used here to avoid an eslint security violation
-  resource['@graph'][parseInt(firstEmptyIdIndex)]['@id'] = resourceUri
-  return JSON.stringify(resource)
-}
-
 export const getResourceTextFromServer = async(groupName, resourceName) => {
-  console.log("getResourceTextFromServer for " + `${groupName}/${resourceName}`)
-  const resourceJson = JSON.stringify(await fetchResource(resourceName)) // getRdfResourceFromServer(groupName, resourceName)
-  console.log("getResourceTextFromServer = " + resourceJson)
-  // resourceJson = (await getRdfResourceFromServer(groupName, resourceName)).response.text
-  // const resourceUri = buildUri(groupName, resourceName)
-
-  // TODO: Once https://github.com/LD4P/sinopia_editor/issues/1753 is closed and
-  //       deployed, consider returning `resourceJson` unmodified and removing
-  //       the no-longer-needed `buildUri` and `addSubjectToResource` functions
-  //       above.
-  // return addSubjectToResource(resourceJson, resourceUri)
+  const resourceJson = JSON.stringify(await fetchResource(resourceName))
   return resourceJson
 }
 
@@ -130,8 +89,6 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   // if we can't get a list of entities to try to download, just log the error and move on (in case there are other groups to download)
   try {
     entityNames = await listGroupRdfEntityNames(groupName)
-    console.log("entityNames = ")
-    console.log(entityNames)
   } catch(err) {
     reportError(err, `error listing entities for group: ${groupName} : ${err.stack}`)
     return null
