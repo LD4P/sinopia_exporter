@@ -23,14 +23,68 @@ export const fetchGroups = () => {
 
   return fetchPromise
     .then((response) => Promise.all([datasetFromJsonld(response.data), Promise.resolve(response)]))
-    // .then((response) => Promise.all([Promise.resolve(response)]))
     .catch((err) => {
       throw new Error(`Error parsing resource: ${err.message || err}`)
     })
 }
 
+export const fetchResources = (group) => {
+  let fetchPromise
+  const uri = config.get('sinopia_api.basePath') + "/resource/?group=" + group
+
+  console.log("API URI: " + uri)
+  fetchPromise = fetch(uri, {
+    headers: { Accept: 'application/json' },
+  })
+    .then((resp) => checkResp(resp)
+      .then(() => resp.json()))
+
+  return fetchPromise
+    .then((response) => Promise.all([datasetFromJsonld(response.data), Promise.resolve(response)]))
+    .catch((err) => {
+      throw new Error(`Error parsing resource: ${err.message || err}`)
+    })
+}
+
+export const fetchResource = (resourceId) => {
+  let fetchPromise
+  const uri = config.get('sinopia_api.basePath') + "/resource/" + resourceId
+
+  console.log("API URI: " + uri)
+  // fetchPromise = fetch(uri, {
+  return fetch(uri, {
+    headers: { Accept: 'application/json' },
+  }).then(response => checkResp(response)
+      .then(() => response.json())) // response.json())
+    // .then(data => {
+    //   console.log("DATA = " + await data.json())
+    //   return data
+    // })
+
+
+    // .then((resp) => checkResp(resp)
+    //   .then(() => resp.json()))
+
+  // return fetchPromise
+  //   // .then((response) => Promise.all([datasetFromJsonld(response), Promise.resolve(response)]))
+  //   .then((response) => Promise.all([getData(response), Promise.resolve(response)]))
+  //   .catch((err) => {
+  //     throw new Error(`Error parsing resource: ${err.message || err}`)
+  //   })
+}
+
+const getData = (resp) => {
+  console.log(" === getData === ")
+  console.log(resp)
+
+  return resp
+}
+
 const checkResp = (resp) => {
+  console.log("checkResp = " + resp)
+
   if (resp.ok) return Promise.resolve()
+
   return resp.json()
     .then((errors) => {
       // Assuming only one for now.
@@ -46,6 +100,8 @@ const checkResp = (resp) => {
 }
 
 const datasetFromJsonld = (jsonld) => {
+  console.log(" === HERE === ")
+  console.log(jsonld)
   const parserJsonld = new JsonLdParser()
 
   const input = new Readable({
@@ -55,6 +111,8 @@ const datasetFromJsonld = (jsonld) => {
     },
   })
 
+  console.log(" === HERE 2 === ")
+  console.log(input)
   const output = parserJsonld.import(input)
   const dataset = rdf.dataset()
 
@@ -62,6 +120,7 @@ const datasetFromJsonld = (jsonld) => {
     dataset.add(quad)
   })
 
+  console.log("OUTPUT = " + output)
   return new Promise((resolve, reject) => {
     output.on('end', resolve)
     output.on('error', reject)

@@ -5,7 +5,7 @@ import SinopiaServer from 'sinopia_server'
 import asyncPool from 'tiny-async-pool'
 import config from 'config'
 import fs from 'fs'
-import { fetchGroups } from './sinopia_client'
+import { fetchGroups, fetchResources, fetchResource } from './sinopia_client'
 
 let clientInstance = null
 
@@ -58,27 +58,38 @@ const reportError = (errorObject, consoleErrMessage = null) => {
 
 // TODO: AMC UPDATE
 const listGroupRdfEntityUris = async (groupName) => {
-  const groupResponse = await sinopiaClient().getGroupWithHttpInfo(groupName)
-  if (!groupResponse.response.body.contains) {
+  // const groupResponse = await sinopiaClient().getGroupWithHttpInfo(groupName)
+  const groupResponse = await fetchResources(groupName)
+  console.log("listGroupRdfEntityUris ==")
+  console.log(groupResponse[1].data)
+  console.log("Looking for URIs")
+  groupResponse[1].data.map((resource) => console.log("new URI = " + resource.uri))
+  // if (!groupResponse.response.body.contains) {
+  if (!groupResponse[1].data) {
     return []
   }
 
-  return [].concat(groupResponse.response.body.contains)
+  // return [].concat(groupResponse.response.body.contains)
+  return [].concat(groupResponse[1].data)
 }
 
 const listGroupRdfEntityNames = async (groupName) => {
-  return (await listGroupRdfEntityUris(groupName)).map((uri) => resourceToName(uri))
+  return (await listGroupRdfEntityUris(groupName)).map((resource) => resourceToName(resource.uri))
 }
 
-const getRdfResourceFromServer = async (groupName, resourceName, accept = 'application/ld+json', prefer = 'return=representation; include="http://www.trellisldp.org/ns/trellis#PreferAudit"') => {
-  return await sinopiaClient().getResourceWithHttpInfo(groupName, resourceName, { accept, prefer })
-}
+// const getRdfResourceFromServer = async (groupName, resourceName, accept = 'application/ld+json', prefer = 'return=representation; include="http://www.trellisldp.org/ns/trellis#PreferAudit"') => {
+//   // return await sinopiaClient().getResourceWithHttpInfo(groupName, resourceName, { accept, prefer })
+//   const t = await fetchResource(resourceName)
+//   console.log("getRdfResourceFromServer = " + t)
+//   return t // fetchResource(resourceName)
+// }
 
 export const buildUri = (groupName, resourceName) => {
   return `${sinopiaClient().apiClient.basePath}/repository/${groupName}/${resourceName}`
 }
 
 const addSubjectToResource = (resourceJson, resourceUri) => {
+  console.log("addSubjectToResource = " + resourceJson)
   const resource = JSON.parse(resourceJson)
   const firstEmptyIdIndex = resource['@graph'].findIndex(obj => obj['@id'] === '')
 
@@ -93,14 +104,18 @@ const addSubjectToResource = (resourceJson, resourceUri) => {
 }
 
 export const getResourceTextFromServer = async(groupName, resourceName) => {
-  const resourceJson = (await getRdfResourceFromServer(groupName, resourceName)).response.text
-  const resourceUri = buildUri(groupName, resourceName)
+  console.log("getResourceTextFromServer for " + `${groupName}/${resourceName}`)
+  const resourceJson = JSON.stringify(await fetchResource(resourceName)) // getRdfResourceFromServer(groupName, resourceName)
+  console.log("getResourceTextFromServer = " + resourceJson)
+  // resourceJson = (await getRdfResourceFromServer(groupName, resourceName)).response.text
+  // const resourceUri = buildUri(groupName, resourceName)
 
   // TODO: Once https://github.com/LD4P/sinopia_editor/issues/1753 is closed and
   //       deployed, consider returning `resourceJson` unmodified and removing
   //       the no-longer-needed `buildUri` and `addSubjectToResource` functions
   //       above.
-  return addSubjectToResource(resourceJson, resourceUri)
+  // return addSubjectToResource(resourceJson, resourceUri)
+  return resourceJson
 }
 
 const saveResourceTextFromServer = async(savePathString, groupName, resourceName) => {
@@ -115,6 +130,8 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   // if we can't get a list of entities to try to download, just log the error and move on (in case there are other groups to download)
   try {
     entityNames = await listGroupRdfEntityNames(groupName)
+    console.log("entityNames = ")
+    console.log(entityNames)
   } catch(err) {
     reportError(err, `error listing entities for group: ${groupName} : ${err.stack}`)
     return null
@@ -144,10 +161,9 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   console.info(`finished export of RDF from group: ${groupName}`)
 }
 
+// TODO: Figure out if we can avoid the [1] indexing here
 const listAllGroups = async () => {
-  // console.log(await fetchGroups())
-  const baseResponse = await fetchGroups() // await sinopiaClient().getBaseWithHttpInfo()
-  console.log(baseResponse[1].data)
+  const baseResponse = await fetchGroups()
   return baseResponse[1].data.map((uri) => resourceToName(uri.id))
 }
 
