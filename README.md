@@ -17,7 +17,11 @@ Invoke the `bin/export` script with the name of the group to be exported
 as a parameter.  E.g. to export RDF for the `ucdavis` group:
 
 ```sh
-$ ./bin/export 'ucdavis' # group name in Sinopia/Trellis
+$ ./bin/export -g ucdavis # group name in Sinopia/Trellis
+
+or
+
+$ ./bin/export --group=ucdavis
 ```
 
 ...which should leave you with output like:
@@ -38,10 +42,14 @@ exported_rdf/
 
 
 Alternatively, instead of a group, you can export from all groups at once by specifying
-`'_ALL_'` instead of a group name, e.g.:
+`-a` or `--all` instead of a group name, e.g.:
 
 ```sh
-$ ./bin/export '_ALL_'
+$ ./bin/export -a
+
+or
+
+$ ./bin/export --all
 ```
 
 ...which should leave you with output similar to what's described above, but with a

@@ -3,12 +3,20 @@
 import sinopiaExporter from '../../package'
 import { downloadAllRdfForGroup, downloadAllRdfForAllGroups } from '../getGroupRDF'
 
+var argv = require('yargs')
+  .alias('g', 'group')
+  .describe('g', 'The name of the group to be exported')
+  .alias('a', 'all')
+  .describe('a', 'Export all groups')
+  .help('h')
+  .alias('h', 'help')
+  .argv;
 
 const helpText = `
 Invoke the bin/export script with the name of the group to be exported
 as a parameter.  E.g. to export RDF for the ucdavis group:
 
-$ ./bin/export 'ucdavis'
+$ ./bin/export -g ucdavis [--group=ucdavis]
 
 ...which should leave you with output like:
 
@@ -26,9 +34,9 @@ exported_rdf/
 
 
 Alternatively, instead of a group, you can export from all groups by specifying
-'_ALL_' instead of a group name, e.g.:
+-a or --all instead of a group name, e.g.:
 
-$ ./bin/export '_ALL_'
+$ ./bin/export -a [--all]
 
 ...which should leave you with output similar to what's described above, but with a
 directory for each group, all inside of one containing directory for the export, named
@@ -58,15 +66,15 @@ exported_rdf/
 
 console.info(`sinopia_exporter v${sinopiaExporter.version}`)
 
-const groupName = process.argv[2]
+const groupName = argv.group
+
 if (groupName) {
-  // TODO: better command line parsing with yargs, see https://github.com/LD4P/sinopia_exporter/issues/38
-  if (groupName == '_ALL_') {
+  downloadAllRdfForGroup(groupName)
+} else {
+  if (argv.all) {
     downloadAllRdfForAllGroups()
   } else {
-    downloadAllRdfForGroup(groupName)
+    console.error(helpText)
+    console.error('\nIt appears that no group name was specified.') 
   }
-} else {
-  console.error(helpText)
-  console.error('\nIt appears that no group name was specified.')
 }

@@ -3,7 +3,7 @@ set -e
 
 rm -fr exported_rdf/*
 
-sh bin/export '_ALL_'
+sh bin/export -a
 echo "Done exporting"
 
 if [ -n "$S3_BUCKET" ]; then
