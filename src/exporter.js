@@ -41,6 +41,8 @@ export const exportGroup = async (groupName, containingDir = '') => {
   const uri = config.get('sinopia_api.basePath') + "/resource/?group=" + groupName
   const groupResources = await query(uri, { Accept: 'application/json' })
 
+  if (!groupResources) return null
+
   groupResources.map((resource) => {
     try {
       fs.writeFileSync(`${savePathString}/${resource.id}`, JSON.stringify(resource))
@@ -64,7 +66,6 @@ export const exportAllGroups = async () => {
   try {
     const uri = config.get('sinopia_api.basePath') + "/groups"
     groupList = await query(uri, { Accept: 'application/json' })
-    console.log(groupList)
   } catch(err) {
     reportError(err, `error listing groups in base container: ${err.stack}`)
     return null
@@ -72,7 +73,7 @@ export const exportAllGroups = async () => {
 
   if (!groupList) return null
 
-  console.info(`exporting groups:  ${groupList}`)
+  console.info(`exporting groups:  ${JSON.stringify(groupList)}`)
   const containingDir = initAndGetSavePath('sinopia_export_all')
 
   groupList.map((group) => exportGroup(group.id, containingDir))
