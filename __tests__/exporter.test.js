@@ -2,7 +2,7 @@
 
 import config from 'config'
 import fs from 'fs'
-import * as getGroupRDF from '../src/exporter'
+import * as exporter from '../src/exporter'
 import SinopiaServer from 'sinopia_server'
 import Honeybadger from 'honeybadger'
 
@@ -22,12 +22,12 @@ const groupResources = {
 }
 const resourceContent = {
   'resource1': '{"@graph":[{"@id":"","label":"resource1content"}]}',
-  'resource2': `{"@graph":[{"@id":"${getGroupRDF.buildUri('group1', 'resource2')}","label":"resource2content"}]}`,
+  // 'resource2': `{"@graph":[{"@id":"${getGroupRDF.buildUri('group1', 'resource2')}","label":"resource2content"}]}`,
   'resource3': '{"@graph":[{"@id":"","label":"resource3content"}]}',
   'resource4': '{"@graph":[{"@id":"","label":"resource4content"}]}',
   'resource5': '{"@graph":[{"@id":"","label":"resource5content"}]}',
-  'resource6': `{"@graph":[{"@id":"${getGroupRDF.buildUri('group2', 'resource6')}","label":"resource6content"}]}`,
-  'resource7': `{"@graph":[{"@id":"${getGroupRDF.buildUri('group3', 'resource7')}","label":"resource7content"}]}`,
+  // 'resource6': `{"@graph":[{"@id":"${getGroupRDF.buildUri('group2', 'resource6')}","label":"resource6content"}]}`,
+  // 'resource7': `{"@graph":[{"@id":"${getGroupRDF.buildUri('group3', 'resource7')}","label":"resource7content"}]}`,
   'resource8': '{"@graph":[{"@id":"","label":"resource8content"}]}',
   'resource9': '{"@graph":[{"@id":"","label":"resource9content"}]}'
 }
@@ -40,23 +40,10 @@ afterAll(async () => {
 })
 
 describe('getGroupRDF', () => {
-  describe('sinopiaClient', () => {
-    it('returns a client that is properly configured', () => {
-      expect(getGroupRDF.sinopiaClient().apiClient.basePath).toEqual(config.get('trellis.basePath'))
-    })
-  })
-
-  describe('getResourceTextFromServer', () => {
-    it('retrieves the specified resource from the server and returns the RDF as text', async () => {
-      const resource2Uri = getGroupRDF.buildUri('group1', 'resource2')
-      expect(await getGroupRDF.getResourceTextFromServer('group1', 'resource2')).toEqual(`{"@graph":[{"@id":"${resource2Uri}","label":"resource2content"}]}`)
-    })
-  })
-
-  describe('downloadAllRdfForGroup', () => {
+  describe('exportGroup', () => {
     it('retrieves the RDF resources for the specified group, and saves the RDF text (one file per resource, in a dated sub-directory per group)', async () => {
       const dlDateLowerBound = new Date()
-      await getGroupRDF.downloadAllRdfForGroup('group1')
+      await exporter.exportGroup('group1')
       const dlDateUpperBound = new Date()
 
       const exportBaseDirContents = fs.readdirSync(config.get('exportBasePath'))
@@ -70,9 +57,9 @@ describe('getGroupRDF', () => {
       const groupDirPath = `${config.get('exportBasePath')}/${groupDirName}`
       const groupDirContents = fs.readdirSync(groupDirPath)
       expect(groupDirContents).toEqual(['complete.log', 'resource1', 'resource2', 'resource3'])
-      const resource1Uri = getGroupRDF.buildUri('group1', 'resource1')
-      const resource2Uri = getGroupRDF.buildUri('group1', 'resource2')
-      const resource3Uri = getGroupRDF.buildUri('group1', 'resource3')
+      const resource1Uri = 'resource1'
+      const resource2Uri = 'resource2'
+      const resource3Uri = 'resource3'
 
       expect(fs.readFileSync(`${groupDirPath}/resource1`).toString()).toEqual(`{"@graph":[{"@id":"${resource1Uri}","label":"resource1content"}]}`)
       expect(fs.readFileSync(`${groupDirPath}/resource2`).toString()).toEqual(`{"@graph":[{"@id":"${resource2Uri}","label":"resource2content"}]}`)
@@ -84,25 +71,25 @@ describe('getGroupRDF', () => {
     })
 
     it('returns null when group is missing)', async () => {
-      const foo = await getGroupRDF.downloadAllRdfForGroup('group0')
+      const foo = await exporter.exportGroup('group0')
       expect(foo).toBeNull()
     })
 
     describe('error handling behavior', () => {
       const consoleErrSpy = jest.spyOn(console, 'error')
       const honeybadgerNotifySpy = jest.spyOn(Honeybadger, 'notify')
-      const originalGetBaseWithHttpInfo = mockSinopiaClient.getBaseWithHttpInfo
-      const originalGetGroupWithHttpInfo = mockSinopiaClient.getGroupWithHttpInfo
-      const originalGetResourceWithHttpInfo = mockSinopiaClient.getResourceWithHttpInfo
+      // const originalGetBaseWithHttpInfo = mockSinopiaClient.getBaseWithHttpInfo
+      // const originalGetGroupWithHttpInfo = mockSinopiaClient.getGroupWithHttpInfo
+      // const originalGetResourceWithHttpInfo = mockSinopiaClient.getResourceWithHttpInfo
 
       beforeEach(() => {
         consoleErrSpy.mockReset()
         honeybadgerNotifySpy.mockReset()
       })
       afterEach(() => {
-        mockSinopiaClient.getBaseWithHttpInfo = originalGetBaseWithHttpInfo
-        mockSinopiaClient.getGroupWithHttpInfo = originalGetGroupWithHttpInfo
-        mockSinopiaClient.getResourceWithHttpInfo = originalGetResourceWithHttpInfo
+        // mockSinopiaClient.getBaseWithHttpInfo = originalGetBaseWithHttpInfo
+        // mockSinopiaClient.getGroupWithHttpInfo = originalGetGroupWithHttpInfo
+        // mockSinopiaClient.getResourceWithHttpInfo = originalGetResourceWithHttpInfo
       })
 
       it('logs and moves on if a resource errors out', async () => {
@@ -113,7 +100,7 @@ describe('getGroupRDF', () => {
         mockSinopiaClient.getResourceWithHttpInfo = async (groupName, resourceName) => {
           return (resourceName === 'resource5' ? errFn(mockRequestErr) : { response: { text: resourceContent[resourceName] } })
         }
-        await getGroupRDF.downloadAllRdfForGroup('group2')
+        await exporter.exportGroup('group2')
 
         const exportBaseDirContents = fs.readdirSync(config.get('exportBasePath'))
         const groupDirName = exportBaseDirContents.filter((dirName) => dirName.match(/^group2_.*$/)).slice(-1)[0]
@@ -121,8 +108,8 @@ describe('getGroupRDF', () => {
         const groupDirPath = `${config.get('exportBasePath')}/${groupDirName}`
         expect(fs.readdirSync(groupDirPath).length).toEqual(3) // two resources and complete.log
 
-        const resource4Uri = getGroupRDF.buildUri('group2', 'resource4')
-        const resource6Uri = getGroupRDF.buildUri('group2', 'resource6')
+        const resource4Uri = 'resource4'
+        const resource6Uri = 'resource6'
 
         expect(fs.readFileSync(`${groupDirPath}/resource4`).toString()).toEqual(`{"@graph":[{"@id":"${resource4Uri}","label":"resource4content"}]}`)
         expect(fs.existsSync(`${groupDirPath}/resource5`)).toBe(false)
@@ -135,10 +122,10 @@ describe('getGroupRDF', () => {
     })
   })
 
-  describe('downloadAllRdfForAllGroups', () => {
+  describe('exportAllGroups', () => {
     it('retrieves the RDF resources for all groups, and saves the RDF text (one file per resource, in a dated sub-directory per group, in a dated containing folder)', async () => {
       const dlDateLowerBound = new Date()
-      await getGroupRDF.downloadAllRdfForAllGroups()
+      await exporter.exportAllGroups()
       const dlDateUpperBound = new Date()
 
       const exportBaseDirContents = fs.readdirSync(config.get('exportBasePath'))
@@ -173,7 +160,7 @@ describe('getGroupRDF', () => {
         expect(groupDirContents).toEqual(expect.arrayContaining(['complete.log'].concat(resourceNames)))
 
         for (const resourceName of resourceNames) {
-          const resourceUri = getGroupRDF.buildUri(groupName, resourceName)
+          const resourceUri = resourceName
           expect(fs.readFileSync(`${groupDirPath}/${resourceName}`).toString()).toEqual(`{"@graph":[{"@id":"${resourceUri}","label":"${resourceName}content"}]}`)
         }
       }
@@ -187,30 +174,30 @@ describe('getGroupRDF', () => {
     describe('error handling behavior', () => {
       const consoleErrSpy = jest.spyOn(console, 'error')
       const honeybadgerNotifySpy = jest.spyOn(Honeybadger, 'notify')
-      const originalGetBaseWithHttpInfo = mockSinopiaClient.getBaseWithHttpInfo
-      const originalGetGroupWithHttpInfo = mockSinopiaClient.getGroupWithHttpInfo
-      const originalGetResourceWithHttpInfo = mockSinopiaClient.getResourceWithHttpInfo
+      // const originalGetBaseWithHttpInfo = mockSinopiaClient.getBaseWithHttpInfo
+      // const originalGetGroupWithHttpInfo = mockSinopiaClient.getGroupWithHttpInfo
+      // const originalGetResourceWithHttpInfo = mockSinopiaClient.getResourceWithHttpInfo
 
       beforeEach(() => {
         consoleErrSpy.mockReset()
         honeybadgerNotifySpy.mockReset()
       })
       afterEach(() => {
-        mockSinopiaClient.getBaseWithHttpInfo = originalGetBaseWithHttpInfo
-        mockSinopiaClient.getGroupWithHttpInfo = originalGetGroupWithHttpInfo
-        mockSinopiaClient.getResourceWithHttpInfo = originalGetResourceWithHttpInfo
+        // mockSinopiaClient.getBaseWithHttpInfo = originalGetBaseWithHttpInfo
+        // mockSinopiaClient.getGroupWithHttpInfo = originalGetGroupWithHttpInfo
+        // mockSinopiaClient.getResourceWithHttpInfo = originalGetResourceWithHttpInfo
       })
 
-      const errFn = (mockErr) => {
-        throw mockErr
-      }
+      // const errFn = (mockErr) => {
+      //   throw mockErr
+      // }
 
       it('logs and moves on if listing resources in a group errors out', async () => {
         const mockRequestErr = new Error("timeout or something")
-        mockSinopiaClient.getGroupWithHttpInfo = async (groupName) => {
-          return (groupName == 'group1' ? errFn(mockRequestErr) : { response: { body: {contains: groupResources[groupName] } } })
-        }
-        await getGroupRDF.downloadAllRdfForAllGroups()
+        // mockSinopiaClient.getGroupWithHttpInfo = async (groupName) => {
+        //   return (groupName == 'group1' ? errFn(mockRequestErr) : { response: { body: {contains: groupResources[groupName] } } })
+        // }
+        await exporter.exportAllGroups()
 
         const exportBaseDirContents = fs.readdirSync(config.get('exportBasePath'))
         const containingDirName = exportBaseDirContents.filter((dirName) => dirName.match(/^sinopia_export_all_.*$/)).slice(-1)[0]
@@ -220,8 +207,8 @@ describe('getGroupRDF', () => {
         expect(fs.readdirSync(containingDirPath).length).toEqual(3) // 2 groups, plus complete.log
         const exportAllDirContents = fs.readdirSync(containingDirPath)
 
-        const resource4Uri = getGroupRDF.buildUri('group2', 'resource4')
-        const resource7Uri = getGroupRDF.buildUri('group3', 'resource7')
+        const resource4Uri = 'resource4'
+        const resource7Uri = 'resource7'
 
         const group1Dir = exportAllDirContents.find((dirName) => dirName.startsWith('group1'))
         expect(fs.existsSync(`${containingDirPath}/${group1Dir}`)).toBe(false)
@@ -238,9 +225,9 @@ describe('getGroupRDF', () => {
 
       it('logs an error if listing groups on the base errors out', async () => {
         const mockRequestErr = new Error("timeout or something")
-        mockSinopiaClient.getBaseWithHttpInfo = async () => { errFn(mockRequestErr) }
+        // mockSinopiaClient.getBaseWithHttpInfo = async () => { errFn(mockRequestErr) }
         const dlDateLowerBound = new Date()
-        await getGroupRDF.downloadAllRdfForAllGroups()
+        await exporter.exportAllGroups()
 
         const errMsgRegex = new RegExp(`^error listing groups in base container: Error: timeout or something`)
         expect(consoleErrSpy).toHaveBeenCalledWith(expect.stringMatching(errMsgRegex))
