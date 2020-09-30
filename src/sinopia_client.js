@@ -1,3 +1,5 @@
+// Copyright 2020 Stanford University see LICENSE for license
+
 const fetch = require("node-fetch");
 
 export const query = (uri, headers) => {
@@ -6,7 +8,7 @@ export const query = (uri, headers) => {
   })
     .then((resp) => checkResp(resp)
       .then(() => resp.json())
-        .then((json) => json.data))
+      .then((json) => json.data))
 }
 
 const checkResp = (resp) => {

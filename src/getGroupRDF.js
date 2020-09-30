@@ -1,4 +1,4 @@
-// Copyright 2019 Stanford University see LICENSE for license
+// Copyright 2020 Stanford University see LICENSE for license
 
 import honeybadger from 'honeybadger'
 import config from 'config'
@@ -39,15 +39,14 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
 
   const savePathString = initAndGetSavePath(groupName, containingDir)
   const uri = config.get('sinopia_api.basePath') + "/resource/?group=" + groupName
-  // const groupResources = await fetchResources(groupName)
   const groupResources = await query(uri, { Accept: 'application/json' })
 
   groupResources.map((resource) => {
     try {
       fs.writeFileSync(`${savePathString}/${resource.id}`, JSON.stringify(resource))
     } catch(err) {
-        // just log and proceed so that we move on and download what we can
-        reportError(err, `error saving resource ${groupName}/${entityName} to ${savePathString} : ${err.stack}`)
+      // just log and proceed so that we move on and download what we can
+      reportError(err, `error saving resource ${groupName}/${resource.id} to ${savePathString} : ${err.stack}`)
     }
   })
 
@@ -64,7 +63,6 @@ export const downloadAllRdfForAllGroups = async () => {
   let groupList
   try {
     const uri = config.get('sinopia_api.basePath') + "/groups"
-    // groupList = await fetchGroups()
     groupList = await query(uri, { Accept: 'application/json' })
     console.log(groupList)
   } catch(err) {

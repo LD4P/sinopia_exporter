@@ -1,7 +1,4 @@
 {
-  "trellis": {
-    "basePath": "https://trellis.sinopia.test"
-  },
   "sinopia_api": {
     "basePath": "https://api.sinopia.test"
   },
