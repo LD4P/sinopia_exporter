@@ -1,9 +1,6 @@
 import config from 'config'
-import { JsonLdParser } from 'jsonld-streaming-parser'
-import rdf from 'rdf-ext'
 
 const fetch = require("node-fetch");
-const Readable = require('stream').Readable
 
 /**
  * Fetches the groups from the Sinopia API.
@@ -32,14 +29,14 @@ export const fetchResources = (group) => {
       .then((json) => json.data))
 }
 
-export const fetchResource = (resourceId) => {
-  const uri = config.get('sinopia_api.basePath') + "/resource/" + resourceId
+// export const fetchResource = (resourceId) => {
+//   const uri = config.get('sinopia_api.basePath') + "/resource/" + resourceId
 
-  return fetch(uri, {
-    headers: { Accept: 'application/json' },
-  }).then(response => checkResp(response)
-    .then(() => response.json()))
-}
+//   return fetch(uri, {
+//     headers: { Accept: 'application/json' },
+//   }).then(response => checkResp(response)
+//     .then(() => response.json()))
+// }
 
 const checkResp = (resp) => {
   // console.log(" === checkResp === ")
@@ -59,28 +56,4 @@ const checkResp = (resp) => {
       if (err.name === 'ApiError') throw err
       throw new Error(`Sinopia API returned ${resp.statusText}`)
     })
-}
-
-const datasetFromJsonld = (jsonld) => {
-  const parserJsonld = new JsonLdParser()
-
-  const input = new Readable({
-    read: () => {
-      input.push(JSON.stringify(jsonld))
-      input.push(null)
-    },
-  })
-
-  const output = parserJsonld.import(input)
-  const dataset = rdf.dataset()
-
-  output.on('data', (quad) => {
-    dataset.add(quad)
-  })
-
-  return new Promise((resolve, reject) => {
-    output.on('end', resolve)
-    output.on('error', reject)
-  })
-    .then(() => dataset)
 }

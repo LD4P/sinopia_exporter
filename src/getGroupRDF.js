@@ -1,34 +1,13 @@
 // Copyright 2019 Stanford University see LICENSE for license
 
 import honeybadger from 'honeybadger'
-import SinopiaServer from 'sinopia_server'
-import asyncPool from 'tiny-async-pool'
 import config from 'config'
 import fs from 'fs'
-import { fetchGroups, fetchResources, fetchResource } from './sinopia_client'
-
-let clientInstance = null
+import { fetchGroups, fetchResources } from './sinopia_client'
 
 const Honeybadger = honeybadger.configure({
   apiKey: process.env.HONEYBADGER_API_KEY
 })
-
-// lazy instantiation of the client makes mocking its behavior easier
-export const sinopiaClient = () => {
-  if (!clientInstance) {
-    clientInstance = new SinopiaServer.LDPApi()
-    clientInstance.apiClient.basePath = config.get('trellis.basePath')
-    console.debug(`Sinopia Server client lazily instantiated.  base URL: ${clientInstance.apiClient.basePath}`)
-  }
-
-  return clientInstance
-}
-
-const resourceToName = (uri) => {
-  if (typeof uri !== 'string') return undefined
-
-  return uri.substr(uri.lastIndexOf('/') + 1)
-}
 
 const getDateString = () => {
   return (new Date()).toISOString()
@@ -53,15 +32,6 @@ const reportError = (errorObject, consoleErrMessage = null) => {
 
   if (consoleErrMessage)
     console.error(consoleErrMessage)
-}
-
-export const buildUri = (groupName, resourceName) => {
-  return `${sinopiaClient().apiClient.basePath}/repository/${groupName}/${resourceName}`
-}
-
-export const getResourceTextFromServer = async(groupName, resourceName) => {
-  const resourceJson = JSON.stringify(await fetchResource(resourceName))
-  return resourceJson
 }
 
 export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
