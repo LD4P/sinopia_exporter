@@ -3,7 +3,7 @@
 import honeybadger from 'honeybadger'
 import config from 'config'
 import fs from 'fs'
-import { fetchGroups, fetchResources } from './sinopia_client'
+import { query } from './sinopia_client'
 
 const Honeybadger = honeybadger.configure({
   apiKey: process.env.HONEYBADGER_API_KEY
@@ -38,7 +38,9 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   console.info(`beginning export of RDF from group: ${groupName}`)
 
   const savePathString = initAndGetSavePath(groupName, containingDir)
-  const groupResources = await fetchResources(groupName)
+  const uri = config.get('sinopia_api.basePath') + "/resource/?group=" + groupName
+  // const groupResources = await fetchResources(groupName)
+  const groupResources = await query(uri, { Accept: 'application/json' })
 
   groupResources.map((resource) => {
     try {
@@ -61,7 +63,9 @@ export const downloadAllRdfForAllGroups = async () => {
   // if we can't get a list of groups for which to try to download RDF, we can't do anything else
   let groupList
   try {
-    groupList = await fetchGroups()
+    const uri = config.get('sinopia_api.basePath') + "/groups"
+    // groupList = await fetchGroups()
+    groupList = await query(uri, { Accept: 'application/json' })
     console.log(groupList)
   } catch(err) {
     reportError(err, `error listing groups in base container: ${err.stack}`)
