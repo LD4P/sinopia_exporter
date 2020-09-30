@@ -28,20 +28,13 @@ export const fetchGroups = () => {
 }
 
 export const fetchResources = (group) => {
-  let fetchPromise
   const uri = config.get('sinopia_api.basePath') + "/resource/?group=" + group
 
-  fetchPromise = fetch(uri, {
-    headers: { Accept: 'application/json' },
+  return fetch(uri, {
+    headers: { Accept: 'application/ld+json' },
   })
     .then((resp) => checkResp(resp)
-      .then(() => resp.json()))
-
-  return fetchPromise
-    .then((response) => Promise.all([datasetFromJsonld(response.data), Promise.resolve(response)]))
-    .catch((err) => {
-      throw new Error(`Error parsing resource: ${err.message || err}`)
-    })
+      .then(() => resp.json())) // .then(json => json.data.map((resource) => resource.uri))
 }
 
 export const fetchResource = (resourceId) => {
@@ -54,6 +47,9 @@ export const fetchResource = (resourceId) => {
 }
 
 const checkResp = (resp) => {
+  // console.log(" === checkResp === ")
+  // console.log(await resp.json())
+
   if (resp.ok) return Promise.resolve()
 
   return resp.json()
