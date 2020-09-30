@@ -34,7 +34,7 @@ const reportError = (errorObject, consoleErrMessage = null) => {
     console.error(consoleErrMessage)
 }
 
-export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
+export const exportGroup = async (groupName, containingDir = '') => {
   console.info(`beginning export of RDF from group: ${groupName}`)
 
   const savePathString = initAndGetSavePath(groupName, containingDir)
@@ -56,7 +56,7 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   console.info(`finished export of RDF from group: ${groupName}`)
 }
 
-export const downloadAllRdfForAllGroups = async () => {
+export const exportAllGroups = async () => {
   console.info('beginning export of RDF from all groups')
 
   // if we can't get a list of groups for which to try to download RDF, we can't do anything else
@@ -75,7 +75,7 @@ export const downloadAllRdfForAllGroups = async () => {
   console.info(`exporting groups:  ${groupList}`)
   const containingDir = initAndGetSavePath('sinopia_export_all')
 
-  groupList.map((group) => downloadAllRdfForGroup(group.id, containingDir))
+  groupList.map((group) => exportGroup(group.id, containingDir))
 
   const completionMsg = `completed export of all groups at ${getDateString()}`
   fs.writeFileSync(`${containingDir}/complete.log`, completionMsg)

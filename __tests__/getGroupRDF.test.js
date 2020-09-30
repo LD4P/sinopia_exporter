@@ -2,7 +2,7 @@
 
 import config from 'config'
 import fs from 'fs'
-import * as getGroupRDF from '../src/getGroupRDF'
+import * as getGroupRDF from '../src/exporter'
 import SinopiaServer from 'sinopia_server'
 import Honeybadger from 'honeybadger'
 
