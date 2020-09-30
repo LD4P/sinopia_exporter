@@ -11,20 +11,14 @@ const Readable = require('stream').Readable
  * @throws when error occurs retrieving or parsing the resource template.
  */ 
 export const fetchGroups = () => {
-  let fetchPromise
   const uri = config.get('sinopia_api.basePath') + "/groups"
 
-  fetchPromise = fetch(uri, {
+  return fetch(uri, {
     headers: { Accept: 'application/json' },
   })
     .then((resp) => checkResp(resp)
-      .then(() => resp.json()))
-
-  return fetchPromise
-    .then((response) => Promise.all([datasetFromJsonld(response.data), Promise.resolve(response)]))
-    .catch((err) => {
-      throw new Error(`Error parsing resource: ${err.message || err}`)
-    })
+      .then(() => resp.json())
+        .then((json) => json.data))
 }
 
 export const fetchResources = (group) => {
@@ -34,7 +28,8 @@ export const fetchResources = (group) => {
     headers: { Accept: 'application/ld+json' },
   })
     .then((resp) => checkResp(resp)
-      .then(() => resp.json())) // .then(json => json.data.map((resource) => resource.uri))
+      .then(() => resp.json())
+      .then((json) => json.data))
 }
 
 export const fetchResource = (resourceId) => {

@@ -70,7 +70,7 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   const savePathString = initAndGetSavePath(groupName, containingDir)
   const groupResources = await fetchResources(groupName)
 
-  groupResources.data.map((resource) => {
+  groupResources.map((resource) => {
     try {
       fs.writeFileSync(`${savePathString}/${resource.id}`, JSON.stringify(resource))
     } catch(err) {
@@ -85,19 +85,14 @@ export const downloadAllRdfForGroup = async (groupName, containingDir = '') => {
   console.info(`finished export of RDF from group: ${groupName}`)
 }
 
-// TODO: Figure out if we can avoid the [1] indexing here
-const listAllGroups = async () => {
-  const baseResponse = await fetchGroups()
-  return baseResponse[1].data.map((uri) => resourceToName(uri.id))
-}
-
 export const downloadAllRdfForAllGroups = async () => {
   console.info('beginning export of RDF from all groups')
 
   // if we can't get a list of groups for which to try to download RDF, we can't do anything else
   let groupList
   try {
-    groupList = await listAllGroups()
+    groupList = await fetchGroups()
+    console.log(groupList)
   } catch(err) {
     reportError(err, `error listing groups in base container: ${err.stack}`)
     return null
@@ -107,11 +102,8 @@ export const downloadAllRdfForAllGroups = async () => {
 
   console.info(`exporting groups:  ${groupList}`)
   const containingDir = initAndGetSavePath('sinopia_export_all')
-  await asyncPool(
-    config.get('sinopia_api.poolLimit'), // the # of concurrent connections in the pool
-    groupList, // the array of values to feed into the async operation
-    (groupName) => downloadAllRdfForGroup(groupName, containingDir) // the async operation
-  )
+
+  groupList.map((group) => downloadAllRdfForGroup(group.id, containingDir))
 
   const completionMsg = `completed export of all groups at ${getDateString()}`
   fs.writeFileSync(`${containingDir}/complete.log`, completionMsg)
