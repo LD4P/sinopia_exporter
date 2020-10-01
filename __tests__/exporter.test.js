@@ -20,6 +20,7 @@ afterAll(async () => {
   // according to:  https://nodejs.org/api/fs.html#fs_fs_rmdirsync_path_options
   //  "Recursive removal is experimental", and is considered "Stability: 1" (https://nodejs.org/api/documentation.html#documentation_stability_index).
   //  but it seems to work fine for me locally (JM 2019-10-19), and cleanup is nice.
+  //  Note: Comment out the next line to avoid deleting export files while testing
   fs.rmdirSync(config.get('exportBasePath'), { recursive: true})
 })
 
