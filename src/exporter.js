@@ -69,16 +69,13 @@ export const exportAllGroups = async () => {
   console.info('beginning export of RDF from all groups')
 
   // if we can't get a list of groups for which to try to download RDF, we can't do anything else
-  let groupList
-  try {
-    const uri = [config.get('sinopia_api.basePath'),'groups'].join('/')
-    groupList = await query(uri, { Accept: 'application/json' })
-  } catch(err) {
-    reportError(err, `error listing groups in base container: ${err.stack}`)
+  const uri = [config.get('sinopia_api.basePath'),'groups'].join('/')
+  const groupList = await query(uri, { Accept: 'application/json' })
+
+  if(!groupList) {
+    reportError(new Error(), 'error retrieving all groups from API')
     return null
   }
-
-  if (!groupList) return null
 
   console.info(`exporting groups:  ${JSON.stringify(groupList)}`)
   const containingDir = initAndGetSavePath('sinopia_export_all')

@@ -4,6 +4,7 @@ import config from 'config'
 import fs from 'fs'
 import * as exporter from '../src/exporter'
 import * as sinopia_client from '../src/sinopia_client'
+import Honeybadger from 'honeybadger'
 
 // Import fixtures
 const resource1 = require('./__fixtures__/004c0602-f3c2-4800-9a21-a14c1a70f3c6.json')
@@ -97,5 +98,26 @@ describe('getGroupRDF', () => {
       const completionLogDate = new Date(/^completed export of all groups at (.*)$/.exec(completionLogText)[1])
       expect(containingDirDate <= completionLogDate && completionLogDate <= dlDateUpperBound).toBeTruthy()
     })
+  })
+
+  describe('error handling behavior', () => {
+    const consoleErrSpy = jest.spyOn(console, 'error')
+    const honeybadgerNotifySpy = jest.spyOn(Honeybadger, 'notify')
+
+    beforeEach(() => {
+      consoleErrSpy.mockReset()
+      honeybadgerNotifySpy.mockReset()
+    })
+
+    it('logs and notifies honeybadger if the no groups are returned', async () => {
+      const mockRequestErr = new Error()
+      const contextObj = { context: { argv: process.argv, sinopiaApiBasePath: config.get('sinopia_api.basePath') } }
+      sinopia_client.query = jest.fn().mockResolvedValue(null)
+      await exporter.exportAllGroups()
+
+      expect(consoleErrSpy).toHaveBeenCalledWith('error retrieving all groups from API')
+      expect(honeybadgerNotifySpy).toHaveBeenCalledWith(mockRequestErr, contextObj)
+    })
+
   })
 })
