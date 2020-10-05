@@ -15,7 +15,7 @@ describe('query', () => {
     })
     fetch.mockImplementation(()=> response)
 
-    expect(await sinopia_client.query("http://localhost:3000/groups")).toStrictEqual({})
+    expect(await sinopia_client.query("http://localhost:3000/groups")).toStrictEqual([{}, {"data": {}}])
   })
 
 
@@ -26,6 +26,7 @@ describe('query', () => {
     })
     fetch.mockImplementation(()=> response)
 
-    expect(await sinopia_client.query("http://localhost:3000/groups")).toEqual(null)
+    // expect(await sinopia_client.query("http://localhost:3000/groups")).toEqual(null)
+    sinopia_client.query("http://localhost:3000/groups").then((res) => { expect(res).toEqual(null) })
   })
 })
