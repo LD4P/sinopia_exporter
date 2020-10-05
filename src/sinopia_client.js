@@ -3,14 +3,11 @@
 const fetch = require("node-fetch");
 
 export const query = async (uri, headers) => {
-  const response = await fetch(uri, { headers: headers })
-  if(!response.ok) return null
-
   try {
-    const json = response.json()
+    const resp = await fetch(uri, { headers: headers })
+    const json = await resp.json()
     return json.data
-  } catch(err) {
-    console.error(err, `Error connecting to API: ${uri}`)
-    return null
+  } catch (err) {
+    throw new Error(`Error parsing resource: ${err.message || err}`)
   }
 }

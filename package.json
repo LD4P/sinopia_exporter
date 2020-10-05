@@ -34,6 +34,7 @@
     "@babel/runtime": "^7.11.2",
     "config": "^3.3.2",
     "honeybadger": "^1.4.0",
+    "jest-fetch-mock": "^3.0.3",
     "node-fetch": "^2.6.1",
     "tiny-async-pool": "^1.1.0",
     "yargs": "^16.0.3"

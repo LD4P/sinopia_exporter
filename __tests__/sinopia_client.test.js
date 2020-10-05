@@ -18,14 +18,10 @@ describe('query', () => {
     expect(await sinopia_client.query("http://localhost:3000/groups")).toStrictEqual({})
   })
 
-
   it('returns null if the api call fails', async () => {
-    const response = Promise.resolve({
-      ok: false,
-      statusText: 'API call failed',
-    })
+    const response = Promise.reject(new Error("ApiError")) // {
     fetch.mockImplementation(()=> response)
 
-    expect(await sinopia_client.query("http://localhost:3000/groups")).toEqual(null)
+    await expect(sinopia_client.query("http://localhost:3000/groups")).rejects.toThrowError('Error parsing resource: ApiError')
   })
 })
