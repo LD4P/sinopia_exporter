@@ -53,19 +53,20 @@ export const exportGroup = async (groupName, containingDir = '') => {
       result_count = groupResources.data.length
 
       for (var i = 0; i < result_count; ++i) {
-        const resource = groupResources.data[i]
+        let resource = groupResources.data[parseInt(i)]
         try {
           const resourcePath = [savePathString, resource.id].join('/')
           fs.writeFileSync(resourcePath, JSON.stringify(resource))
         } catch(err) {
           // just log and proceed so that we move on and download what we can
           reportError(err, `error saving resource ${groupName}/${resource.id} to ${savePathString} : ${err.stack}`)
+          break;
         }
       }
       
       uri = groupResources.links.next // Should not get here unless there is a next link in the data
       
-    }).catch((err) => {
+    }).catch(() => {
       return null
     })
 
@@ -93,7 +94,8 @@ export const exportAllGroups = async () => {
     console.info(`exporting groups:  ${JSON.stringify(groupList)}`)
 
     for (var i = 0; i < groupList.data.length; ++i) {
-      exportGroup(groupList.data[i].id, containingDir)
+      let group = groupList.data[parseInt(i)]
+      exportGroup(group.id, containingDir)
     }
     // groupList.data.foreach((group) => { exportGroup(group.id, containingDir) })
   }).catch((err) => {
