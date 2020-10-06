@@ -52,7 +52,8 @@ export const exportGroup = async (groupName, containingDir = '') => {
     await query(uri, { Accept: 'application/json' }).then((groupResources) => {
       result_count = groupResources.data.length
 
-      groupResources.data.map((resource) => {
+      for (var i = 0; i < result_count; ++i) {
+        const resource = groupResources.data[i]
         try {
           const resourcePath = [savePathString, resource.id].join('/')
           fs.writeFileSync(resourcePath, JSON.stringify(resource))
@@ -60,11 +61,11 @@ export const exportGroup = async (groupName, containingDir = '') => {
           // just log and proceed so that we move on and download what we can
           reportError(err, `error saving resource ${groupName}/${resource.id} to ${savePathString} : ${err.stack}`)
         }
-      })
+      }
       
       uri = groupResources.links.next // Should not get here unless there is a next link in the data
       
-    }).catch(() => {
+    }).catch((err) => {
       return null
     })
 
@@ -91,9 +92,12 @@ export const exportAllGroups = async () => {
 
     console.info(`exporting groups:  ${JSON.stringify(groupList)}`)
 
-    await Promise.all(groupList.data.map((group) => { exportGroup(group.id, containingDir) }))
+    for (var i = 0; i < groupList.data.length; ++i) {
+      exportGroup(groupList.data[i].id, containingDir)
+    }
+    // groupList.data.foreach((group) => { exportGroup(group.id, containingDir) })
   }).catch((err) => {
-    reportError(err, `error retrieving all groups from API: ${uri}` )
+    reportError(err, `error retrieving all groups from API: ${uri} - ${err}` )
     return null
   })
 
