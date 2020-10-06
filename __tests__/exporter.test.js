@@ -21,13 +21,13 @@ afterAll(async () => {
   //  "Recursive removal is experimental", and is considered "Stability: 1" (https://nodejs.org/api/documentation.html#documentation_stability_index).
   //  but it seems to work fine for me locally (JM 2019-10-19), and cleanup is nice.
   //  Note: Comment out the next line to avoid deleting export files while testing
-  fs.rmdirSync(config.get('exportBasePath'), { recursive: true})
+  // fs.rmdirSync(config.get('exportBasePath'), { recursive: true})
 })
 
 describe('getGroupRDF', () => {
   describe('exportGroup', () => {
     it('retrieves the RDF resources for the specified group, and saves the RDF text (one file per resource, in a dated sub-directory per group)', async () => {
-      sinopia_client.query = jest.fn().mockResolvedValue([resource1, resource2, resource3])
+      sinopia_client.query = jest.fn().mockResolvedValue({ data: [resource1, resource2, resource3] })
       const dlDateLowerBound = new Date()
       await exporter.exportGroup('group1')
       const dlDateUpperBound = new Date()
@@ -58,8 +58,8 @@ describe('getGroupRDF', () => {
     it('retrieves the RDF resources for all groups, and saves the RDF text (one file per resource, in a dated sub-directory per group, in a dated containing folder)', async () => {
       sinopia_client.query = jest
         .fn()
-        .mockResolvedValue([resource1, resource2, resource3])
-        .mockResolvedValueOnce(groups)
+        .mockResolvedValue({ data: [resource1, resource2, resource3] })
+        .mockResolvedValueOnce({ data: groups })
 
       const dlDateLowerBound = new Date()
       await exporter.exportAllGroups()

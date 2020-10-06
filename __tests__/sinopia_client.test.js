@@ -15,7 +15,7 @@ describe('query', () => {
     })
     fetch.mockImplementation(()=> response)
 
-    expect(await sinopia_client.query("http://localhost:3000/groups")).toStrictEqual({})
+    expect(await sinopia_client.query("http://localhost:3000/groups")).toStrictEqual({ data: {} })
   })
 
   it('returns null if the api call fails', async () => {

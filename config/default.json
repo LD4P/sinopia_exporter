@@ -1,6 +1,7 @@
 {
   "sinopia_api": {
-    "basePath": "https://api.sinopia.io"
+    "basePath": "https://api.sinopia.io",
+    "query_limit": 25
   },
   "exportBasePath": "./exported_rdf"
 }
