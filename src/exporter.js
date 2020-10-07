@@ -44,11 +44,10 @@ export const exportGroup = async (groupName, containingDir = '') => {
   console.info(`beginning export of RDF from group: ${groupName}`)
 
   const savePathString = initAndGetSavePath(groupName, containingDir)
-  let done = false
   let uri = [config.get('sinopia_api.basePath'), `/resource/?limit=${config.get('sinopia_api.query_limit')}&start=0&group=`, groupName].join('')
 
-  while (!done) {
-    let result_count = 0
+  let result_count = 0
+  do {
     await query(uri, { Accept: 'application/json' }).then((groupResources) => {
       result_count = groupResources.data.length
 
@@ -63,15 +62,13 @@ export const exportGroup = async (groupName, containingDir = '') => {
           break;
         }
       }
-      
-      uri = groupResources.links.next // Should not get here unless there is a next link in the data
-      
-    }).catch(() => {
-      return null
-    })
 
-    if (result_count < config.get('sinopia_api.query_limit')) break;
-  }
+      uri = groupResources.links.next
+
+    }).catch(() => {
+      console.info(`End of results for ${groupName}` )
+    })
+  } while (result_count === config.get('sinopia_api.query_limit'))
 
   const completionMsg = `completed export of ${groupName} at ${getDateString()}`
   fs.writeFileSync(`${savePathString}/complete.log`, completionMsg)
