@@ -32,6 +32,7 @@ module.exports = {
         "indent": ["error", 2, {
           "SwitchCase": 1
         }],
+        "import/namespace": "off",
         // See https://github.com/mysticatea/eslint-plugin-node/blob/master/docs/rules/no-unsupported-features/es-syntax.md
         //   rule supposedly matches ECMA version with node
         //   we get: "Import and export declarations are not supported yet"

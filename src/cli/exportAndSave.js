@@ -1,7 +1,7 @@
 // Copyright 2019 Stanford University see LICENSE for license
 
 import sinopiaExporter from '../../package'
-import { downloadAllRdfForGroup, downloadAllRdfForAllGroups } from '../getGroupRDF'
+import { exportGroup, exportAllGroups } from '../exporter'
 
 var argv = require('yargs')
   .alias('g', 'group')
@@ -69,10 +69,10 @@ console.info(`sinopia_exporter v${sinopiaExporter.version}`)
 const groupName = argv.group
 
 if (groupName) {
-  downloadAllRdfForGroup(groupName)
+  exportGroup(groupName)
 } else {
   if (argv.all) {
-    downloadAllRdfForAllGroups()
+    exportAllGroups()
   } else {
     console.error(helpText)
     console.error('\nIt appears that no group name was specified.') 

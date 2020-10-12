@@ -1,5 +1,6 @@
 {
-  "trellis": {
-    "basePath": "TRELLIS_BASEPATH"
+  "sinopia_api": {
+    "basePath": "SINOPIA_API_BASEPATH",
+    "query_limit": "SINOPIA_API_QUERY_LIMIT"
   }
 }
