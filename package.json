@@ -28,19 +28,19 @@
   "author": "Johnathan Martin <john.martin@stanford.edu>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@babel/core": "^7.11.4",
-    "@babel/node": "^7.10.5",
-    "@babel/preset-env": "^7.11.0",
-    "@babel/runtime": "^7.11.2",
+    "@babel/core": "^7.12.3",
+    "@babel/node": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/runtime": "^7.12.1",
     "config": "^3.3.2",
     "honeybadger": "^1.4.0",
     "jest-fetch-mock": "^3.0.3",
     "node-fetch": "^2.6.1",
     "tiny-async-pool": "^1.1.0",
-    "yargs": "^16.0.3"
+    "yargs": "^16.1.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.11.5",
+    "@babel/plugin-transform-runtime": "^7.12.1",
     "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^23.20.0",
