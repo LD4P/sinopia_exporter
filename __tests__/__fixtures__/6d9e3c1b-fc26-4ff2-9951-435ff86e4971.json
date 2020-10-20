@@ -1,1 +1,61 @@
-{"data":[{"@id":"_:b0","@type":["http://id.loc.gov/ontologies/bibframe/Title"],"http://id.loc.gov/ontologies/bibframe/mainTitle":[{"@value":"ḋḍḎ","@language":"eng"}]},{"@id":"http://id.loc.gov/vocabulary/contentTypes/txt","http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"text"}]},{"@id":"http://localhost:3000/resource/6d9e3c1b-fc26-4ff2-9951-435ff86e4971","@type":["http://id.loc.gov/ontologies/bibframe/Work"],"http://id.loc.gov/ontologies/bibframe/content":[{"@id":"http://id.loc.gov/vocabulary/contentTypes/txt"}],"http://id.loc.gov/ontologies/bibframe/title":[{"@id":"_:b0"}],"http://sinopia.io/vocabulary/hasResourceTemplate":[{"@value":"ld4p:RT:bf2:Monograph:Work:Un-nested"}]}],"bfAdminMetadataRefs":[],"bfInstanceRefs":[],"bfItemRefs":[],"bfWorkRefs":[],"group":"stanford","types":["http://id.loc.gov/ontologies/bibframe/Work"],"user":"michelle","timestamp":"2019-12-07T16:45:32.215Z","templateId":"ld4p:RT:bf2:Monograph:Work:Un-nested","id":"6d9e3c1b-fc26-4ff2-9951-435ff86e4971","uri":"http://localhost:3000/resource/6d9e3c1b-fc26-4ff2-9951-435ff86e4971"}
+{
+  "data": [
+    {
+      "@id": "_:b0",
+      "@type": [
+        "http://id.loc.gov/ontologies/bibframe/Title"
+      ],
+      "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+        {
+          "@value": "ḋḍḎ",
+          "@language": "eng"
+        }
+      ]
+    },
+    {
+      "@id": "http://id.loc.gov/vocabulary/contentTypes/txt",
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "text"
+        }
+      ]
+    },
+    {
+      "@id": "http://localhost:3000/resource/6d9e3c1b-fc26-4ff2-9951-435ff86e4971",
+      "@type": [
+        "http://id.loc.gov/ontologies/bibframe/Work"
+      ],
+      "http://id.loc.gov/ontologies/bibframe/content": [
+        {
+          "@id": "http://id.loc.gov/vocabulary/contentTypes/txt"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/title": [
+        {
+          "@id": "_:b0"
+        }
+      ],
+      "http://sinopia.io/vocabulary/hasResourceTemplate": [
+        {
+          "@value": "ld4p:RT:bf2:Monograph:Work:Un-nested"
+        }
+      ]
+    }
+  ],
+  "links": {
+   "first": "some_first_link"
+  },
+  "bfAdminMetadataRefs": [],
+  "bfInstanceRefs": [],
+  "bfItemRefs": [],
+  "bfWorkRefs": [],
+  "group": "stanford",
+  "types": [
+    "http://id.loc.gov/ontologies/bibframe/Work"
+  ],
+  "user": "michelle",
+  "timestamp": "2019-12-07T16:45:32.215Z",
+  "templateId": "ld4p:RT:bf2:Monograph:Work:Un-nested",
+  "id": "6d9e3c1b-fc26-4ff2-9951-435ff86e4971",
+  "uri": "http://localhost:3000/resource/6d9e3c1b-fc26-4ff2-9951-435ff86e4971"
+}
