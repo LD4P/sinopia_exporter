@@ -1,1 +1,235 @@
-{"data":[{"@id":"_:b0","@type":["http://id.loc.gov/ontologies/bibframe/Title"],"http://id.loc.gov/ontologies/bibframe/mainTitle":[{"@value":"Music description and access","@language":"eng"}]},{"@id":"_:b1","@type":["http://id.loc.gov/ontologies/bibframe/Script"],"http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"Latin","@language":"eng"}]},{"@id":"_:b2","@type":["http://id.loc.gov/ontologies/bibframe/ClassificationLcc"],"http://id.loc.gov/ontologies/bibframe/classificationPortion":[{"@value":"ML111","@language":"eng"}],"http://id.loc.gov/ontologies/bibframe/itemPortion":[{"@value":".H34 2018","@language":"eng"}]},{"@id":"_:b3","@type":["http://id.loc.gov/ontologies/bflc/PrimaryContribution"],"http://id.loc.gov/ontologies/bibframe/agent":[{"@id":"_:b4"}]},{"@id":"_:b4","@type":["http://id.loc.gov/ontologies/bibframe/Person"],"http://www.w3.org/1999/02/22-rdf-syntax-ns#value":[{"@id":"http://id.loc.gov/authorities/names/n87141576"}]},{"@id":"_:b5","@type":["http://id.loc.gov/ontologies/bibframe/TableOfContents"],"http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"Part I. Setting the stage -- Part II. Practical cataloging.","@language":"eng"}]},{"@id":"http://id.loc.gov/authorities/genreForms/gf2014026089","http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"Discursive works"}]},{"@id":"http://id.loc.gov/authorities/names/n87141576","http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"Harden, Jean, 1948-"}]},{"@id":"http://id.loc.gov/authorities/subjects/sh85020869","http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"Cataloging of music"}]},{"@id":"http://id.loc.gov/vocabulary/contentTypes/txt","http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"text"}]},{"@id":"http://id.loc.gov/vocabulary/languages/eng","http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"English"}]},{"@id":"http://id.loc.gov/vocabulary/mcolor/blw","http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"black and white"}]},{"@id":"http://id.loc.gov/vocabulary/millus/mus","http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"Music"}]},{"@id":"http://id.worldcat.org/fast/848788","http://www.w3.org/2000/01/rdf-schema#label":[{"@value":"Cataloging of music--Data processing--Standards"}]},{"@id":"http://localhost:3000/resource/004c0602-f3c2-4800-9a21-a14c1a70f3c6","@type":["http://id.loc.gov/ontologies/bibframe/Work"],"http://id.loc.gov/ontologies/bibframe/classification":[{"@id":"_:b2"}],"http://id.loc.gov/ontologies/bibframe/colorContent":[{"@id":"http://id.loc.gov/vocabulary/mcolor/blw"}],"http://id.loc.gov/ontologies/bibframe/content":[{"@id":"http://id.loc.gov/vocabulary/contentTypes/txt"}],"http://id.loc.gov/ontologies/bibframe/contribution":[{"@id":"_:b3"}],"http://id.loc.gov/ontologies/bibframe/genreForm":[{"@id":"http://id.loc.gov/authorities/genreForms/gf2014026089"}],"http://id.loc.gov/ontologies/bibframe/illustrativeContent":[{"@id":"http://id.loc.gov/vocabulary/millus/mus"}],"http://id.loc.gov/ontologies/bibframe/language":[{"@id":"http://id.loc.gov/vocabulary/languages/eng"}],"http://id.loc.gov/ontologies/bibframe/notation":[{"@id":"_:b1"}],"http://id.loc.gov/ontologies/bibframe/originDate":[{"@value":"2018","@language":"eng"}],"http://id.loc.gov/ontologies/bibframe/subject":[{"@id":"http://id.loc.gov/authorities/subjects/sh85020869"},{"@id":"http://id.worldcat.org/fast/848788"}],"http://id.loc.gov/ontologies/bibframe/tableOfContents":[{"@id":"_:b5"}],"http://id.loc.gov/ontologies/bibframe/title":[{"@id":"_:b0"}],"http://sinopia.io/vocabulary/hasResourceTemplate":[{"@value":"ld4p:RT:bf2:Monograph:Work:Un-nested"}]}],"bfAdminMetadataRefs":[],"bfInstanceRefs":[],"bfItemRefs":[],"bfWorkRefs":[],"group":"stanford","types":["http://id.loc.gov/ontologies/bibframe/Work"],"user":"NancyL","timestamp":"2020-04-01T21:04:17.233Z","templateId":"ld4p:RT:bf2:Monograph:Work:Un-nested","id":"004c0602-f3c2-4800-9a21-a14c1a70f3c6","uri":"http://localhost:3000/resource/004c0602-f3c2-4800-9a21-a14c1a70f3c6"}
+{
+  "data": [
+    {
+      "@id": "_:b0",
+      "@type": [
+        "http://id.loc.gov/ontologies/bibframe/Title"
+      ],
+      "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+        {
+          "@value": "Music description and access",
+          "@language": "eng"
+        }
+      ]
+    },
+    {
+      "@id": "_:b1",
+      "@type": [
+        "http://id.loc.gov/ontologies/bibframe/Script"
+      ],
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "Latin",
+          "@language": "eng"
+        }
+      ]
+    },
+    {
+      "@id": "_:b2",
+      "@type": [
+        "http://id.loc.gov/ontologies/bibframe/ClassificationLcc"
+      ],
+      "http://id.loc.gov/ontologies/bibframe/classificationPortion": [
+        {
+          "@value": "ML111",
+          "@language": "eng"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/itemPortion": [
+        {
+          "@value": ".H34 2018",
+          "@language": "eng"
+        }
+      ]
+    },
+    {
+      "@id": "_:b3",
+      "@type": [
+        "http://id.loc.gov/ontologies/bflc/PrimaryContribution"
+      ],
+      "http://id.loc.gov/ontologies/bibframe/agent": [
+        {
+          "@id": "_:b4"
+        }
+      ]
+    },
+    {
+      "@id": "_:b4",
+      "@type": [
+        "http://id.loc.gov/ontologies/bibframe/Person"
+      ],
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+        {
+          "@id": "http://id.loc.gov/authorities/names/n87141576"
+        }
+      ]
+    },
+    {
+      "@id": "_:b5",
+      "@type": [
+        "http://id.loc.gov/ontologies/bibframe/TableOfContents"
+      ],
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "Part I. Setting the stage -- Part II. Practical cataloging.",
+          "@language": "eng"
+        }
+      ]
+    },
+    {
+      "@id": "http://id.loc.gov/authorities/genreForms/gf2014026089",
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "Discursive works"
+        }
+      ]
+    },
+    {
+      "@id": "http://id.loc.gov/authorities/names/n87141576",
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "Harden, Jean, 1948-"
+        }
+      ]
+    },
+    {
+      "@id": "http://id.loc.gov/authorities/subjects/sh85020869",
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "Cataloging of music"
+        }
+      ]
+    },
+    {
+      "@id": "http://id.loc.gov/vocabulary/contentTypes/txt",
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "text"
+        }
+      ]
+    },
+    {
+      "@id": "http://id.loc.gov/vocabulary/languages/eng",
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "English"
+        }
+      ]
+    },
+    {
+      "@id": "http://id.loc.gov/vocabulary/mcolor/blw",
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "black and white"
+        }
+      ]
+    },
+    {
+      "@id": "http://id.loc.gov/vocabulary/millus/mus",
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "Music"
+        }
+      ]
+    },
+    {
+      "@id": "http://id.worldcat.org/fast/848788",
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "Cataloging of music--Data processing--Standards"
+        }
+      ]
+    },
+    {
+      "@id": "http://localhost:3000/resource/004c0602-f3c2-4800-9a21-a14c1a70f3c6",
+      "@type": [
+        "http://id.loc.gov/ontologies/bibframe/Work"
+      ],
+      "http://id.loc.gov/ontologies/bibframe/classification": [
+        {
+          "@id": "_:b2"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/colorContent": [
+        {
+          "@id": "http://id.loc.gov/vocabulary/mcolor/blw"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/content": [
+        {
+          "@id": "http://id.loc.gov/vocabulary/contentTypes/txt"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/contribution": [
+        {
+          "@id": "_:b3"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/genreForm": [
+        {
+          "@id": "http://id.loc.gov/authorities/genreForms/gf2014026089"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/illustrativeContent": [
+        {
+          "@id": "http://id.loc.gov/vocabulary/millus/mus"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/language": [
+        {
+          "@id": "http://id.loc.gov/vocabulary/languages/eng"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/notation": [
+        {
+          "@id": "_:b1"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/originDate": [
+        {
+          "@value": "2018",
+          "@language": "eng"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/subject": [
+        {
+          "@id": "http://id.loc.gov/authorities/subjects/sh85020869"
+        },
+        {
+          "@id": "http://id.worldcat.org/fast/848788"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/tableOfContents": [
+        {
+          "@id": "_:b5"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/title": [
+        {
+          "@id": "_:b0"
+        }
+      ],
+      "http://sinopia.io/vocabulary/hasResourceTemplate": [
+        {
+          "@value": "ld4p:RT:bf2:Monograph:Work:Un-nested"
+        }
+      ]
+    }
+  ],
+  "links": {
+   "first": "some_first_link"
+  },
+  "bfAdminMetadataRefs": [],
+  "bfInstanceRefs": [],
+  "bfItemRefs": [],
+  "bfWorkRefs": [],
+  "group": "stanford",
+  "types": [
+    "http://id.loc.gov/ontologies/bibframe/Work"
+  ],
+  "user": "NancyL",
+  "timestamp": "2020-04-01T21:04:17.233Z",
+  "templateId": "ld4p:RT:bf2:Monograph:Work:Un-nested",
+  "id": "004c0602-f3c2-4800-9a21-a14c1a70f3c6",
+  "uri": "http://localhost:3000/resource/004c0602-f3c2-4800-9a21-a14c1a70f3c6"
+}
