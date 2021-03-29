@@ -28,9 +28,9 @@
   "author": "Johnathan Martin <john.martin@stanford.edu>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@babel/core": "^7.13.10",
-    "@babel/node": "^7.13.10",
-    "@babel/preset-env": "^7.13.10",
+    "@babel/core": "^7.13.13",
+    "@babel/node": "^7.13.13",
+    "@babel/preset-env": "^7.13.12",
     "@babel/runtime": "^7.13.10",
     "config": "^3.3.6",
     "honeybadger": "^1.4.0",
