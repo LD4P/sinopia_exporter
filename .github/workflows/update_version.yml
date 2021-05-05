@@ -23,12 +23,14 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-        with:
-          path: main
 
       # Runs a set of commands using the runners shell
       - name: Use latest tag for version
         run: |
+          git config --local user.email "$(git log --format='%ae' HEAD^!)"
+          git config --local user.name "$(git log --format='%an' HEAD^!)"
+          git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          git pull github ${GITHUB_REF} --ff-only
           export APP_VERSION=$(git describe --tags --always)
           sed -i -E "s/version\": \"(.*)\"/version\": \"${APP_VERSION:1}\"/" package.json;
           npm i
