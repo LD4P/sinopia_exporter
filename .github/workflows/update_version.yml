@@ -33,10 +33,11 @@ jobs:
           echo $APP_VERSION
           sed -i -E "s/version\": \"(.*)\"/version\": \"${APP_VERSION:1}\"/" package.json;
           npm i
+          git checkout -b update-version
           git commit -am "Update to latest tagged version"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          base: main
+          base: update-version
           title: 'Updates package.json to latest tagged version'
