@@ -1,7 +1,7 @@
 {
   "name": "sinopia_exporter",
   "description": "Export RDF entities from a group in Sinopia Server (Sinopia's particular configuration of trellis-ext-db)",
-  "version": "1.0.0",
+  "version": "59015c",
   "scripts": {
     "eslint": "eslint --max-warnings 0 --color -c .eslintrc.js --ext js,jsx .",
     "eslint-fix": "eslint --max-warnings 0 --color -c .eslintrc.js --ext js,jsx --fix .",
