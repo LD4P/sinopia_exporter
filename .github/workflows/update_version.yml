@@ -45,8 +45,7 @@ jobs:
           git push origin update-version
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          base: main
-          branch: update-version
-          title: 'Updates package.json to latest tagged version'
+        run: |
+          gh pr create --title "Version updated to latest tagged version" --body "Version updated in package.json and package-lock.json" 
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
