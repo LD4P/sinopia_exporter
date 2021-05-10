@@ -29,7 +29,7 @@
   "dependencies": {
     "@babel/core": "^7.14.0",
     "@babel/node": "^7.13.13",
-    "@babel/preset-env": "^7.14.0",
+    "@babel/preset-env": "^7.14.1",
     "@babel/runtime": "^7.14.0",
     "config": "^3.3.6",
     "honeybadger": "^1.4.0",
