@@ -27,9 +27,9 @@
   "author": "Johnathan Martin <john.martin@stanford.edu>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@babel/core": "^7.14.8",
+    "@babel/core": "^7.15.0",
     "@babel/node": "^7.14.9",
-    "@babel/preset-env": "^7.14.9",
+    "@babel/preset-env": "^7.15.0",
     "@babel/runtime": "^7.14.8",
     "config": "^3.3.6",
     "honeybadger": "^1.4.0",
@@ -39,9 +39,9 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.14.5",
+    "@babel/plugin-transform-runtime": "^7.15.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-import": "^2.24.0",
     "eslint-plugin-jest": "^23.20.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.4.0",
