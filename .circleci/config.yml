@@ -128,16 +128,6 @@ workflows:
             tags:
               ignore:
                 - /v.*/
-      - register_tag_image:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore:
-                - /.*/
-            tags:
-              only:
-                - /v.*/
       - register_stage_image:
           requires:
             - build
