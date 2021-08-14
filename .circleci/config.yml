@@ -65,7 +65,7 @@ jobs:
             docker build -t ld4p/sinopia_exporter:latest --build-arg HONEYBADGER_API_KEY=$HONEYBADGER_API_KEY .
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push ld4p/sinopia_exporter:latest
-  register_tag_image:
+  register_stage_image:
     <<: *defaults
     steps:
       - checkout
@@ -77,9 +77,25 @@ jobs:
       - run:
           name: Build & Register Images
           command: |
-            docker build -t ld4p/sinopia_exporter:$CIRCLE_TAG --build-arg HONEYBADGER_API_KEY=$HONEYBADGER_API_KEY .
+            docker build -t ld4p/sinopia_exporter:release-stage --build-arg HONEYBADGER_API_KEY=$HONEYBADGER_API_KEY .
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push ld4p/sinopia_exporter:$CIRCLE_TAG
+            docker push ld4p/sinopia_exporter:release-stage
+  register_stage_and_prod_image:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache: # gives us back matching node_modules
+          key: dependencies-prod-{{ checksum "package.json" }}
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build & Register Images
+          command: |
+            docker build -t ld4p/sinopia_exporter:release-stage -t ld4p/sinopia_exporter:release-prod --build-arg HONEYBADGER_API_KEY=$HONEYBADGER_API_KEY .
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push ld4p/sinopia_exporter:release-stage
+            docker push ld4p/sinopia_exporter:release-prod
 workflows:
   version: 2
   build:
@@ -112,7 +128,7 @@ workflows:
             tags:
               ignore:
                 - /v.*/
-      - register_tag_image:
+      - register_stage_image:
           requires:
             - build
           filters:
@@ -121,4 +137,16 @@ workflows:
                 - /.*/
             tags:
               only:
-                - /v.*/
+                - /v.[0-9\.]+-beta/
+          context: ld4p
+      - register_stage_and_prod_image:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - /.*/
+            tags:
+              only:
+                - /v.[0-9\.]+/
+          context: ld4p
