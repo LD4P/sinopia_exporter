@@ -30,7 +30,7 @@
     "@babel/core": "^7.15.0",
     "@babel/node": "^7.14.9",
     "@babel/preset-env": "^7.15.0",
-    "@babel/runtime": "^7.14.8",
+    "@babel/runtime": "^7.15.3",
     "config": "^3.3.6",
     "honeybadger": "^1.4.0",
     "jest-fetch-mock": "^3.0.3",
