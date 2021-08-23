@@ -32,7 +32,7 @@
     "@babel/preset-env": "^7.15.0",
     "@babel/runtime": "^7.15.3",
     "config": "^3.3.6",
-    "honeybadger": "^1.4.0",
+    "honeybadger": "^1.4.1",
     "jest-fetch-mock": "^3.0.3",
     "node-fetch": "^2.6.1",
     "tiny-async-pool": "^1.2.0",
@@ -41,7 +41,7 @@
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.15.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-import": "^2.24.1",
     "eslint-plugin-jest": "^23.20.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.4.0",
