@@ -34,7 +34,7 @@
     "config": "^3.3.6",
     "honeybadger": "^1.4.1",
     "jest-fetch-mock": "^3.0.3",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.2",
     "tiny-async-pool": "^1.2.0",
     "yargs": "^16.2.0"
   },
