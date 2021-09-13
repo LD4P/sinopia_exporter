@@ -1,149 +1,131 @@
-# Copyright 2019 Stanford University see LICENSE file
-# CircleCI 2.0 configuration file
-
-defaults: &defaults
-  docker:
-    - image: cimg/node:16.8
-  working_directory: ~/sinopia_exporter
-
-version: 2
+version: 2.1
+orbs:
+  node: circleci/node@4.7.0
+  docker: circleci/docker@1.7.0
+  gh: circleci/github-cli@1.0.4
+executors:
+  default:
+    docker:
+      - image: 'cimg/node:16.8'
+references:
+  publish_params: &publish_params
+    docker-password: DOCKER_PASS
+    docker-username: DOCKER_USER
+  filters:
+    branch_only: &branch_only_filter
+      branches:
+        only:
+          - /.*/
+      tags:
+        ignore:
+          - /.*/
+    main_only: &main_only_filter
+      branches:
+        only:
+          - main
+      tags:
+        ignore:
+          - /.*/
+    release_and_beta_only: &release_and_beta_only_filter
+      branches:
+        ignore:
+          - /.*/
+      tags:
+        only:
+          - /v.[0-9\.]+(-beta)?/
+    release_only: &release_only_filter
+      branches:
+        ignore:
+          - /.*/
+      tags:
+        only:
+          - /v.[0-9\.]+/
 jobs:
-  dependencies:
-    <<: *defaults
+  test:
+    executor: default
     steps:
       - checkout
-      - restore_cache:
-          key: dependency-cache-prod-{{ checksum "package.json" }}
-      - run: npm install --only=production
-      - save_cache:
-          key: dependency-cache-prod-{{ checksum "package.json" }}
-          paths:
-            - node_modules
-      - restore_cache:
-          key: dependency-cache-ci-{{ checksum "package.json" }}
-      - run: npm install # including CI/Test dependencies
-      - save_cache:
-          key: dependency-cache-ci-{{ checksum "package.json" }}
-          paths:
-            - node_modules
-  build:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          key: dependency-cache-ci-{{ checksum "package.json" }}
-      - run:
-          name: Run linter (eslint)
-          command: npm run eslint
+      - node/install-packages
       - run:
           name: Setup Code Climate test-reporter
           command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
-      - run:
-          name: Run jest unit tests
-          command: |
             ./cc-test-reporter before-build
-            npm run jest-ci
+      - run:
+          name: Run tests
+          command: npm run jest-ci
+      - run:
+          name: Send coverage report to Code Climate
+          command: |
             ./cc-test-reporter after-build --exit-code $?
-  register_latest_image:
-    <<: *defaults
+  dependency-update:
+    executor: default
     steps:
-      - checkout
-      - setup_remote_docker
-      - restore_cache: # gives us back matching node_modules
-          key: dependencies-prod-{{ checksum "package.json" }}
-      - attach_workspace:
-          at: .
+      - gh/setup
+      - gh/clone
       - run:
-          name: Build & Register Images
-          # NOTE: the env variables holding docker credentials are stored in the CircleCI dashboard
+          name: Update dependencies
           command: |
-            docker build -t ld4p/sinopia_exporter:latest --build-arg HONEYBADGER_API_KEY=$HONEYBADGER_API_KEY .
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push ld4p/sinopia_exporter:latest
-  register_stage_image:
-    <<: *defaults
-    steps:
-      - checkout
-      - setup_remote_docker
-      - restore_cache: # gives us back matching node_modules
-          key: dependencies-prod-{{ checksum "package.json" }}
-      - attach_workspace:
-          at: .
-      - run:
-          name: Build & Register Images
-          command: |
-            docker build -t ld4p/sinopia_exporter:release-stage --build-arg HONEYBADGER_API_KEY=$HONEYBADGER_API_KEY .
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push ld4p/sinopia_exporter:release-stage
-  register_stage_and_prod_image:
-    <<: *defaults
-    steps:
-      - checkout
-      - setup_remote_docker
-      - restore_cache: # gives us back matching node_modules
-          key: dependencies-prod-{{ checksum "package.json" }}
-      - attach_workspace:
-          at: .
-      - run:
-          name: Build & Register Images
-          command: |
-            docker build -t ld4p/sinopia_exporter:release-stage -t ld4p/sinopia_exporter:release-prod --build-arg HONEYBADGER_API_KEY=$HONEYBADGER_API_KEY .
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push ld4p/sinopia_exporter:release-stage
-            docker push ld4p/sinopia_exporter:release-prod
+            git config user.name "dlss-infra-bot"
+            git config user.email "dlss-infrastructure-team-owner@lists.stanford"
+            git checkout -b update-dependencies
+            repo_url=$(echo $CIRCLE_REPOSITORY_URL | sed -e "s/git@github\.com:/https:\/\/github.com\//" -e "s/\.git//")
+            git remote set-url origin $repo_url
+            git remote show origin
+            npm update
+            npm audit fix || echo "Outstanding fixes"
+            git add package-lock.json package.json && git commit -m "Update NPM dependencies"
+            if [ $? -eq 0 ]; then
+              git push origin update-dependencies && gh pr create --title "Update dependencies" --body ""
+            fi
 workflows:
-  version: 2
   build:
     jobs:
-      - dependencies:
+      - test:
           filters:
-            branches:
-              only:
-                - /.*/
-            tags:
-              only:
-                - /v.*/
-      - build:
-          requires:
-            - dependencies
+            <<: *branch_only_filter
+      - node/run:
+          name: lint
+          npm-run: eslint
           filters:
-            branches:
-              only:
-                - /.*/
-            tags:
-              only:
-                - /v.*/
-      - register_latest_image:
+            <<: *branch_only_filter
+      - docker/publish:
+          <<: *publish_params
+          name: publish-dev
+          context: ld4p
+          image: ld4p/sinopia_exporter
+          tag: latest
           requires:
-            - build
+            - test
+            - lint
+          filters:
+            <<: *main_only_filter
+      - docker/publish:
+          <<: *publish_params
+          name: publish-stage
+          context: ld4p
+          image: ld4p/sinopia_exporter
+          tag: release-stage
+          filters:
+            <<: *release_and_beta_only_filter
+      - docker/publish:
+          <<: *publish_params
+          name: publish-prod
+          context: ld4p
+          image: ld4p/sinopia_exporter
+          tag: release-prod
+          filters:
+            <<: *release_only_filter
+  dependency-update:
+    triggers:
+      - schedule:
+          # Mondays at 1am
+          cron: "0 1 * * 1"
           filters:
             branches:
               only:
                 - main
-            tags:
-              ignore:
-                - /v.*/
-      - register_stage_image:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore:
-                - /.*/
-            tags:
-              only:
-                - /v.[0-9\.]+-beta/
-          context: ld4p
-      - register_stage_and_prod_image:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore:
-                - /.*/
-            tags:
-              only:
-                - /v.[0-9\.]+/
+    jobs:
+      - dependency-update:
           context: ld4p
