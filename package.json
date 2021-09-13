@@ -11,7 +11,7 @@
     "test-verbose": "jest --colors --runInBand"
   },
   "engines": {
-    "node": "14.11.x"
+    "node": "16.8.x"
   },
   "keywords": [
     "RDF",
