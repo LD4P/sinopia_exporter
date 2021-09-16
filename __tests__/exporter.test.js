@@ -11,9 +11,9 @@ const resource2 = require('./__fixtures__/6d9e3c1b-fc26-4ff2-9951-435ff86e4971.j
 const resource3 = require('./__fixtures__/6f30cb1a-676d-4d5d-9f54-32162c9ab573.json')
 
 const groups = [
-  { 'id': 'group1'},
-  { 'id': 'group2'},
-  { 'id': 'group3'}
+  { 'id': 'group1', 'label': 'Group 1'},
+  { 'id': 'group2', 'label': 'Group 2'},
+  { 'id': 'group3', 'label': 'Group 3'}
 ]
 
 afterAll(async () => {
