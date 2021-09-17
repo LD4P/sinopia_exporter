@@ -7,7 +7,7 @@ jest.mock('node-fetch', ()=>jest.fn())
 
 describe('query', () => {
   it('successfully resolves the promise when response status is OK', async () => {
-    const responseBody = { "data": {} }
+    const responseBody = { "data": [{ id: 'group1', label: 'Group 1'}, { id: 'group2', label: 'Group 2'}] }
 
     const response = Promise.resolve({
       ok: true,
@@ -15,7 +15,7 @@ describe('query', () => {
     })
     fetch.mockImplementation(()=> response)
 
-    expect(await sinopia_client.query("http://localhost:3000/groups")).toStrictEqual({ data: {} })
+    expect(await sinopia_client.query("http://localhost:3000/groups")).toStrictEqual(responseBody)
   })
 
   it('returns null if the api call fails', async () => {
