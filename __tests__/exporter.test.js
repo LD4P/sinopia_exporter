@@ -27,6 +27,7 @@ afterAll(async () => {
 describe('getGroupRDF', () => {
   describe('exportGroup', () => {
     it('retrieves the RDF resources for the specified group, and saves the RDF text (one file per resource, in a dated sub-directory per group)', async () => {
+      // eslint-disable-next-line no-import-assign
       sinopia_client.query = jest.fn().mockResolvedValue({ data: [resource1, resource2, resource3] })
       const dlDateLowerBound = new Date()
       await exporter.exportGroup('group1')
@@ -56,6 +57,7 @@ describe('getGroupRDF', () => {
 
   describe('exportAllGroups', () => {
     it('retrieves the RDF resources for all groups, and saves the RDF text (one file per resource, in a dated sub-directory per group, in a dated containing folder)', async () => {
+      // eslint-disable-next-line no-import-assign
       sinopia_client.query = jest
         .fn()
         .mockResolvedValue({ data: [resource1, resource2, resource3] })
