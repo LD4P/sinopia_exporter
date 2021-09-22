@@ -1,16 +1,15 @@
 // Copyright 2019 Stanford University see LICENSE for license
 
-import sinopiaExporter from '../../package'
-import { exportGroup, exportAllGroups } from '../exporter'
+import sinopiaExporter from "../../package"
+import { exportGroup, exportAllGroups } from "../exporter"
 
-var argv = require('yargs')
-  .alias('g', 'group')
-  .describe('g', 'The name of the group to be exported')
-  .alias('a', 'all')
-  .describe('a', 'Export all groups')
-  .help('h')
-  .alias('h', 'help')
-  .argv;
+var argv = require("yargs")
+  .alias("g", "group")
+  .describe("g", "The name of the group to be exported")
+  .alias("a", "all")
+  .describe("a", "Export all groups")
+  .help("h")
+  .alias("h", "help").argv
 
 const helpText = `
 Invoke the bin/export script with the name of the group to be exported
@@ -63,7 +62,6 @@ exported_rdf/
         └── resource9
 `
 
-
 console.info(`sinopia_exporter v${sinopiaExporter.version}`)
 
 const groupName = argv.group
@@ -75,6 +73,6 @@ if (groupName) {
     exportAllGroups()
   } else {
     console.error(helpText)
-    console.error('\nIt appears that no group name was specified.') 
+    console.error("\nIt appears that no group name was specified.")
   }
 }

@@ -1,37 +1,29 @@
 // Copyright 2019 Stanford University see Apache2.txt for license
 module.exports = {
-  plugins: [
-    "import",
-    "jest",
-    "security"
-  ],
+  plugins: ["import", "jest", "security"],
   extends: [
     "eslint:recommended",
     "plugin:node/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:security/recommended",
-    "plugin:jest/recommended"
+    "plugin:jest/recommended",
+    "prettier",
   ],
   env: {
-    "es6": true,
-    "jest": true,
-    "node": true
+    es6: true,
+    jest: true,
+    node: true,
   },
   parserOptions: {
     ecmaVersion: 2019,
-    sourceType: "module"
+    sourceType: "module",
   },
   overrides: [
     {
-      "files": ["src/**/*.js",
-                "__mocks__/**/*.js",
-                "__tests__/**/*.js"],
-      "rules": {
-        // Indent `case` statements within `switch` blocks
-        "indent": ["error", 2, {
-          "SwitchCase": 1
-        }],
+      files: ["src/**/*.js", "__mocks__/**/*.js", "__tests__/**/*.js"],
+      rules: {
+        indent: "off", // Off for prettier
         "import/namespace": "off",
         // See https://github.com/mysticatea/eslint-plugin-node/blob/master/docs/rules/no-unsupported-features/es-syntax.md
         //   rule supposedly matches ECMA version with node
@@ -47,10 +39,10 @@ module.exports = {
         "no-unused-vars": [
           "error",
           {
-            "argsIgnorePattern": "^_"
-          }
-        ]
-      }
+            argsIgnorePattern: "^_",
+          },
+        ],
+      },
     },
     {
       // We aren't concerned about this in our tests, see:
@@ -58,21 +50,17 @@ module.exports = {
       //   https://github.com/nodesecurity/eslint-plugin-security/blob/master/docs/the-dangers-of-square-bracket-notation.md
       //   https://security.stackexchange.com/questions/170648/variable-assigned-to-object-injection-sink-security-detect-object-injection
       // specifically, the variables in square brackets do not come from user input
-      files: [
-        '__tests__/**/*.js'
-      ],
+      files: ["__tests__/**/*.js"],
       rules: {
-        'security/detect-object-injection': 'off',
-      }
+        "security/detect-object-injection": "off",
+      },
     },
     {
       // Allow skipped tests in test suite
-      files: [
-        '__tests__/**/*.js'
-      ],
+      files: ["__tests__/**/*.js"],
       rules: {
-        'jest/no-disabled-tests': 'off',
-      }
-    }
-  ]
-}
+        "jest/no-disabled-tests": "off",
+      },
+    },
+  ],
+};
