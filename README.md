@@ -103,3 +103,26 @@ docker run --rm -v ~/data/ld4p/sinopia_exporter/exported_rdf:/home/circleci/expo
 The export container uses the following environment variables:
 * `S3_BUCKET`: For example, sinopia-exports-development
 * `TRELLIS_BASEPATH`: For example, https://trellis.development.sinopia.io
+
+### Linters
+
+There are two linters/formatters used in this project: eslint and prettier.
+They can be run together or individually.
+
+To run both:
+`npm run lint`
+
+To auto-fix errors in both (where possible):
+`npm run fix`
+
+To run just eslint:
+`npm run eslint`
+
+To automatically fix just eslint problems (where possible):
+`npm run eslint-fix`
+
+To run just prettier:
+`npm run pretty`
+
+To automatically fix just prettier problems (where possible):
+`npm run pretty-fix`

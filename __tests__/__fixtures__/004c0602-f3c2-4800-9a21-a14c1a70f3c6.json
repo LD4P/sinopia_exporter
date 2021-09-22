@@ -2,9 +2,7 @@
   "data": [
     {
       "@id": "_:b0",
-      "@type": [
-        "http://id.loc.gov/ontologies/bibframe/Title"
-      ],
+      "@type": ["http://id.loc.gov/ontologies/bibframe/Title"],
       "http://id.loc.gov/ontologies/bibframe/mainTitle": [
         {
           "@value": "Music description and access",
@@ -14,9 +12,7 @@
     },
     {
       "@id": "_:b1",
-      "@type": [
-        "http://id.loc.gov/ontologies/bibframe/Script"
-      ],
+      "@type": ["http://id.loc.gov/ontologies/bibframe/Script"],
       "http://www.w3.org/2000/01/rdf-schema#label": [
         {
           "@value": "Latin",
@@ -26,9 +22,7 @@
     },
     {
       "@id": "_:b2",
-      "@type": [
-        "http://id.loc.gov/ontologies/bibframe/ClassificationLcc"
-      ],
+      "@type": ["http://id.loc.gov/ontologies/bibframe/ClassificationLcc"],
       "http://id.loc.gov/ontologies/bibframe/classificationPortion": [
         {
           "@value": "ML111",
@@ -44,9 +38,7 @@
     },
     {
       "@id": "_:b3",
-      "@type": [
-        "http://id.loc.gov/ontologies/bflc/PrimaryContribution"
-      ],
+      "@type": ["http://id.loc.gov/ontologies/bflc/PrimaryContribution"],
       "http://id.loc.gov/ontologies/bibframe/agent": [
         {
           "@id": "_:b4"
@@ -55,9 +47,7 @@
     },
     {
       "@id": "_:b4",
-      "@type": [
-        "http://id.loc.gov/ontologies/bibframe/Person"
-      ],
+      "@type": ["http://id.loc.gov/ontologies/bibframe/Person"],
       "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
         {
           "@id": "http://id.loc.gov/authorities/names/n87141576"
@@ -66,9 +56,7 @@
     },
     {
       "@id": "_:b5",
-      "@type": [
-        "http://id.loc.gov/ontologies/bibframe/TableOfContents"
-      ],
+      "@type": ["http://id.loc.gov/ontologies/bibframe/TableOfContents"],
       "http://www.w3.org/2000/01/rdf-schema#label": [
         {
           "@value": "Part I. Setting the stage -- Part II. Practical cataloging.",
@@ -142,9 +130,7 @@
     },
     {
       "@id": "http://localhost:3000/resource/004c0602-f3c2-4800-9a21-a14c1a70f3c6",
-      "@type": [
-        "http://id.loc.gov/ontologies/bibframe/Work"
-      ],
+      "@type": ["http://id.loc.gov/ontologies/bibframe/Work"],
       "http://id.loc.gov/ontologies/bibframe/classification": [
         {
           "@id": "_:b2"
@@ -217,16 +203,14 @@
     }
   ],
   "links": {
-   "first": "some_first_link"
+    "first": "some_first_link"
   },
   "bfAdminMetadataRefs": [],
   "bfInstanceRefs": [],
   "bfItemRefs": [],
   "bfWorkRefs": [],
   "group": "stanford",
-  "types": [
-    "http://id.loc.gov/ontologies/bibframe/Work"
-  ],
+  "types": ["http://id.loc.gov/ontologies/bibframe/Work"],
   "user": "NancyL",
   "timestamp": "2020-04-01T21:04:17.233Z",
   "templateId": "ld4p:RT:bf2:Monograph:Work:Un-nested",

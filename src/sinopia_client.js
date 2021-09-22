@@ -1,6 +1,6 @@
 // Copyright 2020 Stanford University see LICENSE for license
 
-const fetch = require("node-fetch");
+const fetch = require("node-fetch")
 
 export const query = async (uri, headers) => {
   try {
