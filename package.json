@@ -1,6 +1,6 @@
 {
   "name": "sinopia_exporter",
-  "description": "Export RDF entities from a group in Sinopia Server (Sinopia's particular configuration of trellis-ext-db)",
+  "description": "Export RDF entities from a group in Sinopia Server",
   "scripts": {
     "eslint": "eslint --max-warnings 0 --color -c .eslintrc.js --ext js,jsx .",
     "eslint-fix": "eslint --max-warnings 0 --color -c .eslintrc.js --ext js,jsx --fix .",
@@ -22,8 +22,6 @@
     "export",
     "backup",
     "Sinopia",
-    "Trellis",
-    "trellis-ext-db",
     "LDP",
     "LD4P",
     "LD"

@@ -18,7 +18,7 @@ Invoke the `bin/export` script with the name of the group to be exported
 as a parameter.  E.g. to export RDF for the `ucdavis` group:
 
 ```sh
-$ ./bin/export -g ucdavis # group name in Sinopia/Trellis
+$ ./bin/export -g ucdavis # group name in Sinopia
 
 or
 
@@ -102,7 +102,6 @@ docker run --rm -v ~/data/ld4p/sinopia_exporter/exported_rdf:/home/circleci/expo
 ### Configuration
 The export container uses the following environment variables:
 * `S3_BUCKET`: For example, sinopia-exports-development
-* `TRELLIS_BASEPATH`: For example, https://trellis.development.sinopia.io
 
 ### Linters
 
