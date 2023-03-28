@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   node: circleci/node@5.0.2
   docker: circleci/docker@2.0.3
-  gh: circleci/github-cli@1.0.4
+  gh: circleci/github-cli@2.2.0
 executors:
   default:
     docker:
