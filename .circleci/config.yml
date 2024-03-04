@@ -1,12 +1,12 @@
 version: 2.1
 orbs:
   node: circleci/node@5.0.2
-  docker: circleci/docker@2.0.3
+  docker: circleci/docker@2.5.0
   gh: circleci/github-cli@2.2.0
 executors:
   default:
     docker:
-      - image: 'cimg/node:16.8'
+      - image: 'cimg/node:20.11'
 references:
   publish_params: &publish_params
     docker-password: DOCKER_PASS
