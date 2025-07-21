@@ -1,8 +1,6 @@
 # Sinopia Exporter
 
 [![CircleCI](https://circleci.com/gh/LD4P/sinopia_exporter.svg?style=svg)](https://circleci.com/gh/LD4P/sinopia_exporter)
-[![Code Climate](https://codeclimate.com/github/LD4P/sinopia_exporter/badges/gpa.svg)](https://codeclimate.com/github/LD4P/sinopia_exporter)
-[![Code Climate Test Coverage](https://codeclimate.com/github/LD4P/sinopia_exporter/badges/coverage.svg)](https://codeclimate.com/github/LD4P/sinopia_exporter/coverage)
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/ld4p/sinopia_exporter?sort=semver)](https://hub.docker.com/repository/docker/ld4p/sinopia_exporter/tags?page=1&ordering=last_updated)
 
 ## Plain local export
